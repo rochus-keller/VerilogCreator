@@ -37,9 +37,10 @@ Vlpro files follow the same syntax as QtCreator pro files (see http://doc.qt.io/
 
 `SRCFILES += "/path with whitespace/filename.v"`
 
-`SRCFILES += /firstpath/filename.v /secondpath/filename.v \
-
-		/thirdpath_on_new_line/filename.v`
+```
+SRCFILES += /firstpath/filename.v /secondpath/filename.v \
+		/thirdpath_on_new_line/filename.v
+```
 		
 `SRCFILES += /directory_path1/ filename1.v filename2.v /directory_path2/ filename3.v filename4.v`
 
