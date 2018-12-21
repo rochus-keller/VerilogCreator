@@ -1,4 +1,5 @@
-![icon](http://software.rochus-keller.info/VerilogCreator_100.png)## Welcome to VerilogCreator 
+![icon](http://software.rochus-keller.info/VerilogCreator_100.png)
+## Welcome to VerilogCreator 
 
 VerilogCreator is a [QtCreator](https://download.qt.io/official_releases/qtcreator/) plugin. It turns QtCreator into a Verilog 2005 IDE. 
 
@@ -67,7 +68,7 @@ These variables are used the same way as their SRC counterparts. Use them to add
 
 The variable `INCDIRS` specifies where the parser looks for include files (included by the Verilog include compiler directive).
 
-`DEFINES += DISABLE_SV_ASSERTION "E203_PC_SIZE 24"
+`DEFINES += DISABLE_SV_ASSERTION "E203_PC_SIZE 24"`
 
 This has the same effect as the Verilog include compiler directive and affects all files. Note that also the syntax corresponds to Verilog defines; since Verilog uses whitespace to separate name and values you have to use quotes in the vlpro file. 
 There is also a variable `BUILD_UNDEFS` by which defines can be deactivated in the command file generated for Icarus, Verilator and Yosys; you could for example define VERILATOR in the vlpro so VerilogCreator can see it but then use `BUILD_UNDEFS = VERILATOR` to avoid define warnings in Verilator.
