@@ -38,6 +38,7 @@ Vlpro files follow the same syntax as QtCreator pro files (see http://doc.qt.io/
 `SRCFILES += "/path with whitespace/filename.v"`
 
 `SRCFILES += /firstpath/filename.v /secondpath/filename.v \
+
 		/thirdpath_on_new_line/filename.v`
 		
 `SRCFILES += /directory_path1/ filename1.v filename2.v /directory_path2/ filename3.v filename4.v`
@@ -92,7 +93,8 @@ Follow these steps to build VerilogCreator:
 
 Instead of using qmake and make you can open VerilogCreator.pro using QtCreator and build it there.
 
-Here is a pre-built version of the plugin compiled with QtCreator 3.4 und Qt 5.4.1 on Ubuntu Linux i386 in case you want to try it: http://software.rochus-keller.info/libVerilogCreator_linux_i386.tar.gz
+Here is a **pre-built version of the plugin** compiled with QtCreator 3.4 und Qt 5.4.1 on Ubuntu Linux i386 in case you want to try it: http://software.rochus-keller.info/libVerilogCreator_linux_i386.tar.gz
+
 Unpack it to the QtCreator plugins directory; it should work with QtCreator (for i386) version 3.4 or newer.
 
 Pre-built versions for Windows and OS X will follow.
