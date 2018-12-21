@@ -1,0 +1,13 @@
+{
+    \"Name\" : \"VerilogCreator\",
+    \"Version\" : \"0.5.3\",
+    \"CompatVersion\" : \"0.5.3\",
+    \"Vendor\" : \"Rochus Keller\",
+    \"Copyright\" : \"(C) 2018 Rochus Keller\",
+    \"License\" : \"GPL\",
+    \"Category\" : \"Other Languages\",
+    \"Description\" : \"QtCreator based IDE for Verilog\",
+    \"Url\" : \"https://github.com/rochus-keller\",
+    $$dependencyList
+}
+

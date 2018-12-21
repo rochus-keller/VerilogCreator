@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>
+  <mime-type type='text/x-verilogcreator-project'>
+    <sub-class-of type='text/plain'/>
+    <comment>Verilog project file</comment>
+    <glob pattern='*.vlpro'/>
+  </mime-type>
+  <mime-type type='text/x-verilog'>
+    <sub-class-of type='text/plain'/>
+    <comment>Verilog source file</comment>
+    <glob pattern='*.v'/>
+    <glob pattern='*.vh'/>
+    <glob pattern='*.vl'/>
+  </mime-type>
+</mime-info>

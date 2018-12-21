@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/VlEditor">
+        <file>VlEditor.mimetypes.xml</file>
+    </qresource>
+    <qresource prefix="/verilogcreator">
+        <file>images/class.png</file>
+        <file>images/func.png</file>
+        <file>images/var.png</file>
+        <file>images/block.png</file>
+    </qresource>
+</RCC>
