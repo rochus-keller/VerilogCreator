@@ -18,7 +18,6 @@
 #*/
 
 DEFINES += VERILOGCREATOR_LIBRARY
-DEFINES -= QT_NO_CAST_FROM_ASCII
 
 # Qt Creator linking
 
@@ -55,6 +54,16 @@ QTC_PLUGIN_RECOMMENDS += \
 ###### End _dependencies.pri contents ######
 
 include($$QTCREATOR_SOURCES/src/qtcreatorplugin.pri)
+
+VL_COMPAT_VERSION_LIST=$$split(QTCREATOR_COMPAT_VERSION,.)
+VL_COMPAT_VER_MAJ=$$format_number($$member(VL_COMPAT_VERSION_LIST,0), width=2 zeropad)
+VL_COMPAT_VER_MIN=$$format_number($$member(VL_COMPAT_VERSION_LIST,1), width=2 zeropad)
+DEFINES += "VL_QTC_VER_MAJ=$$VL_COMPAT_VER_MAJ" # 03
+DEFINES += "VL_QTC_VER_MIN=$$VL_COMPAT_VER_MIN" # 04
+DEFINES += "VL_QTC_VER=$$VL_COMPAT_VER_MAJ$$VL_COMPAT_VER_MIN" # 0304
+message($$DEFINES)
+
+DEFINES -= QT_NO_CAST_FROM_ASCII
 
 # VerilogCreator files
 

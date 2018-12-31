@@ -417,12 +417,21 @@ QStringList Project::tclGetVar(const QByteArray& name, void* data)
         return p->getConfig( name );
 }
 
+#if VL_QTC_VER >= 0306
+ProjectExplorer::Project::RestoreResult Project::fromMap(const QVariantMap &map, QString *errorMessage)
+#else
 bool Project::fromMap(const QVariantMap& map)
+#endif
 {
     // Diese Funktion wird von Explorer-Plugin immer aufgerufen, auch wenn .user noch nicht existiert
 
+#if VL_QTC_VER >= 0306
+    if (Project::fromMap(map,errorMessage) != Project::RestoreResult::Ok )
+        return Project::RestoreResult::Error;
+#else
     if (!ProjectExplorer::Project::fromMap(map))
         return false;
+#endif
 
     // aus GenericProject
     ProjectExplorer::Kit *defaultKit = ProjectExplorer::KitManager::defaultKit();
@@ -458,7 +467,11 @@ bool Project::fromMap(const QVariantMap& map)
     }
 
     // refresh(Everything);
+#if VL_QTC_VER >= 0306
+    return Project::RestoreResult::Ok;
+#else
     return true;
+#endif
 }
 
 void Project::onFileChanged(const QString& path)

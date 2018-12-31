@@ -63,7 +63,11 @@ namespace Vl
         static void fillNode( const QStringList& files, ProjectExplorer::FolderNode* );
         static QStringList tclGetVar(const QByteArray& name, void* data);
 
-        bool fromMap(const QVariantMap &map);
+#if VL_QTC_VER >= 0306
+        RestoreResult fromMap(const QVariantMap &map, QString *errorMessage) Q_DECL_OVERRIDE;
+#else
+        bool fromMap(const QVariantMap &map) Q_DECL_OVERRIDE;
+#endif
     protected slots:
         void onFileChanged(const QString& path);
     private:

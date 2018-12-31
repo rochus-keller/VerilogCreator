@@ -48,11 +48,19 @@ EditorDocument1::~EditorDocument1()
     ModelManager::instance()->getFileCache()->removeFile( filePath().toString() );
 }
 
+#if VL_QTC_VER >= 0306
+TextEditor::TextDocument::OpenResult EditorDocument1::open(QString* errorString, const QString& fileName, const QString& realFileName)
+#else
 bool EditorDocument1::open(QString* errorString, const QString& fileName, const QString& realFileName)
+#endif
 {
     //qDebug() << "before open" << fileName << realFileName;
     d_opening = true;
+#if VL_QTC_VER >= 0306
+    const TextDocument::OpenResult res = TextDocument::open(errorString, fileName, realFileName );
+#else
     const bool res = TextDocument::open(errorString, fileName, realFileName );
+#endif
     // wird nach EditorWidget::finalizeInitialization aufgerufen!
     d_opening = false;
     // qDebug() << "after open";

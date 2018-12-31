@@ -110,8 +110,12 @@ TclBuildConfigWidget::TclBuildConfigWidget(TclBuildConfig* bc):d_conf(bc)
     d_buildPath->setEnvironment(bc->environment());
     d_buildPath->setPath(bc->rawBuildDirectory().toString());
     fl->addRow(tr("Build directory:"), d_buildPath );
+#if VL_QTC_VER >= 0306
+    connect(d_buildPath, SIGNAL(rawPathChanged(QString)),this,SLOT(buildDirectoryChanged()));
+#else
     connect(d_buildPath, &Utils::PathChooser::changed,
             this, &TclBuildConfigWidget::buildDirectoryChanged);
+#endif
 
     connect(bc, SIGNAL(environmentChanged()),
             this, SLOT(environmentChanged()) );

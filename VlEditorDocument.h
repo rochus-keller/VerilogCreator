@@ -34,7 +34,11 @@ namespace Vl
         ~EditorDocument1();
 
         // overrides
+#if VL_QTC_VER >= 0306
+        TextDocument::OpenResult open(QString *errorString, const QString &fileName, const QString &realFileName);
+#else
         bool open(QString *errorString, const QString &fileName, const QString &realFileName);
+#endif
         bool save(QString *errorString, const QString &fileName, bool autoSave);
 
     signals:
