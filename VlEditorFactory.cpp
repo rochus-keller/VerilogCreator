@@ -45,7 +45,11 @@ EditorFactory1::EditorFactory1()
     //setAutoCompleterCreator([]() { return new AutoCompleter; });
     //setCompletionAssistProvider(new CompletionAssistProvider);
     setSyntaxHighlighterCreator([]() { return new Highlighter1; });
+#if VL_QTC_VER >= 0405
+    setCommentDefinition(Utils::CommentDefinition::CppStyle);
+#else
     setCommentStyle(Utils::CommentDefinition::CppStyle);
+#endif
     setParenthesesMatchingEnabled(true);
     setCodeFoldingSupported(true);
     setMarksVisible(true);
@@ -93,7 +97,11 @@ EditorFactory2::EditorFactory2()
 
     TextEditor::Keywords keywords( vars, funcs , QMap<QString, QStringList>() );
     setSyntaxHighlighterCreator([keywords]() { return new Highlighter2(keywords); });
+#if VL_QTC_VER >= 0405
+    setCommentDefinition(Utils::CommentDefinition::HashStyle);
+#else
     setCommentStyle(Utils::CommentDefinition::HashStyle);
+#endif
     setParenthesesMatchingEnabled(true);
     setCodeFoldingSupported(true);
     setMarksVisible(true);

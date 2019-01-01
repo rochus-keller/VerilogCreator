@@ -23,6 +23,7 @@
 #include <QFileInfo>
 using namespace Vl;
 
+#if VL_QTC_VER < 0405
 ProjectManager::ProjectManager()
 {
 
@@ -42,3 +43,4 @@ ProjectExplorer::Project*Vl::ProjectManager::openProject(const QString& fileName
 
     return new Project(this, fileName);
 }
+#endif

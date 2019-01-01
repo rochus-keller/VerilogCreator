@@ -20,6 +20,7 @@
 * http://www.gnu.org/copyleft/gpl.html.
 */
 
+#if VL_QTC_VER < 0405
 #include <projectexplorer/iprojectmanager.h>
 
 namespace Vl
@@ -35,5 +36,5 @@ namespace Vl
 
     };
 }
-
+#endif
 #endif // VLPROJECTMANAGER_H

@@ -113,7 +113,7 @@ void EditorWidget1::onFindUsages()
         return;
     CrossRefModel::SymRefList res = mdl->findAllReferencingSymbols( id ); // hier ohne file filter!
     res.append(CrossRefModel::SymRef(id));
-    qSort(res.begin(), res.end(), lessThan1 );
+    std::sort(res.begin(), res.end(), lessThan1 );
 
     Core::SearchResult *search = Core::SearchResultWindow::instance()->startNewSearch(tr("Verilog Usages:"),
                                                 QString(),
@@ -241,7 +241,7 @@ void EditorWidget1::onUpdateCodeWarnings()
         result.append(sel);
     }
 
-    qSort(result.begin(), result.end(), lessThan2);
+    std::sort(result.begin(), result.end(), lessThan2);
 
     setExtraSelections( TextEditor::TextEditorWidget::CodeWarningsSelection, result );
 }
@@ -393,7 +393,7 @@ static ExtraSelections toExtraSelections(const CrossRefModel::SymRefList& uses,
         result.append(sel);
     }
 
-    qSort(result.begin(), result.end(), lessThan2);
+    std::sort(result.begin(), result.end(), lessThan2);
     return result;
 }
 
@@ -452,8 +452,11 @@ void EditorWidget1::onCursor()
 
 void EditorWidget1::onOpenEditor(const Core::SearchResultItem& item)
 {
-    Core::EditorManager::openEditorAt( item.path.first(),
-                                          item.lineNumber, item.textMarkPos);
+#if VL_QTC_VER >= 0405
+    Core::EditorManager::openEditorAtSearchResult( item );
+#else
+    Core::EditorManager::openEditorAt( item.path.first(), item.lineNumber, item.textMarkPos);
+#endif
 
 }
 

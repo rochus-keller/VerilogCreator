@@ -37,6 +37,9 @@
 #include <utils/mimetypes/mimedatabase.h>
 #include <coreplugin/editormanager/editormanager.h>
 #include <texteditor/texteditorconstants.h>
+#if VL_QTC_VER >= 0405
+#include <projectexplorer/projectmanager.h>
+#endif
 
 #include <QAction>
 #include <QMessageBox>
@@ -84,7 +87,11 @@ bool VerilogCreatorPlugin::initialize(const QStringList &arguments, QString *err
     addAutoReleasedObject(new Vl::EditorFactory1);
     addAutoReleasedObject(new Vl::EditorFactory2);
     //TODO addAutoReleasedObject(new SymbolFilter([](const QString &file) {..
+#if VL_QTC_VER >= 0405
+    ProjectExplorer::ProjectManager::registerProjectType<Vl::Project>(Vl::Constants::ProjectMimeType);
+#else
     addAutoReleasedObject(new Vl::ProjectManager);
+#endif
     addAutoReleasedObject(new Vl::MakeStepFactory);
     addAutoReleasedObject(new Vl::BuildConfigurationFactory);
     addAutoReleasedObject(new Vl::RunConfigurationFactory);

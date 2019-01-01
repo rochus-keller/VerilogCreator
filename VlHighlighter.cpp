@@ -231,12 +231,18 @@ void Highlighter1::highlightBlock(const QString& text)
 
 
 
+static std::pair<int, TextEditor::TextStyle> make(int i,TextEditor::TextStyle s){
+    return std::pair<int, TextEditor::TextStyle>(i,s);}
+
 Highlighter2::Highlighter2(const Keywords& keywords):m_keywords(keywords)
 {
     static QVector<TextStyle> categories;
-    if (categories.isEmpty())
-        categories << C_TYPE << C_KEYWORD << C_COMMENT << C_VISUAL_WHITESPACE;
+    categories << C_TYPE << C_KEYWORD << C_COMMENT << C_VISUAL_WHITESPACE;
+#if VL_QTC_VER >= 0405
+    setTextFormatCategories(categories.size(), [categories](int i){ return categories[i]; });
+#else
     setTextFormatCategories(categories);
+#endif
 }
 
 void Highlighter2::highlightBlock(const QString& text)
@@ -280,5 +286,9 @@ void Highlighter2::highlightBlock(const QString& text)
             break;
     }
 
+#if VL_QTC_VER >= 0405
+    formatSpaces(text);
+#else
     applyFormatToSpaces(text, formatForCategory(ProfileVisualWhitespaceFormat));
+#endif
 }
