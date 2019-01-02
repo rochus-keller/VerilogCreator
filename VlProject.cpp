@@ -426,7 +426,7 @@ bool Project::fromMap(const QVariantMap& map)
     // Diese Funktion wird von Explorer-Plugin immer aufgerufen, auch wenn .user noch nicht existiert
 
 #if VL_QTC_VER >= 0306
-    if (Project::fromMap(map,errorMessage) != Project::RestoreResult::Ok )
+    if (ProjectExplorer::Project::fromMap(map,errorMessage) != Project::RestoreResult::Ok )
         return Project::RestoreResult::Error;
 #else
     if (!ProjectExplorer::Project::fromMap(map))
