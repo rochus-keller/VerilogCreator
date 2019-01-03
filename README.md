@@ -97,7 +97,7 @@ Follow these steps if you want to build VerilogCreator yourself:
 1. In case you don't have the Tcl development package installed: download http://software.rochus-keller.info/tcl_headers.zip and unpack it to BUILD_DIR/tcl.
 1. Either set the QTC_SOURCE (path to the QtCreator/QtcVerilog source code directory) and QTC_BUILD (path to the QtCreator/QtcVerilog installation directory) environment variables or directly modify the QTCREATOR_SOURCES and IDE_BUILD_TREE variables in VerilogCreator.pro. 
 1. Goto the BUILD_DIR/VerilogCreator subdirectory and execute `QTDIR/bin/qmake VerilogCreator.pro` (see the Qt documentation concerning QTDIR).
-1. Run make; after a couple of minutes the plugin is compiled and automatically deployed to the local QtCreator plugin directory (on Linux to ~/.local/share/data/QtProject/qtcreator/plugins/x.y.z/libVerilogCreator.so) or the QtcVerilog . 
+1. Run make; after a couple of minutes the plugin is compiled and automatically deployed to the local QtCreator plugin directory (on Linux to ~/.local/share/data/QtProject/qtcreator/plugins/x.y.z/libVerilogCreator.so) or directly to QtcVerilog. 
 1. Start QtCreator/QtcVerilog and check in the "Help/About Plugins..." dialog (section "Other Languages") that the plugin is activated.
 
 Instead of using qmake and make you can open VerilogCreator.pro using QtCreator and build it there.
