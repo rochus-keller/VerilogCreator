@@ -21,6 +21,7 @@
 #include <tcl/tcl.h>
 #include <QtDebug>
 #include <QLibrary>
+#include <errno.h>
 using namespace Vl;
 
 static TclEngine* s_inst = 0;
