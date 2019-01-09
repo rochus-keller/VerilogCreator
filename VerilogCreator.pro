@@ -70,6 +70,11 @@ DEFINES -= QT_NO_CAST_FROM_ASCII
 
 # VerilogCreator files
 
+CONFIG(debug, debug|release) {
+        DEFINES += _DEBUG
+}
+!win32 { QMAKE_CXXFLAGS += -Wno-reorder -Wno-unused-parameter -Wno-unused-function -Wno-unused-variable }
+
 INCLUDEPATH += ..
 
 SOURCES += \

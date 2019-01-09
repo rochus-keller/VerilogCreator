@@ -40,7 +40,6 @@ namespace Vl
         void highlightBlock(const QString &text);
 
     private:
-        PpLexer d_lex;
         enum Category { C_Num, C_Str, C_Kw, C_Type, C_Ident, C_Op, C_Pp, C_Cmt, C_Brack, C_Max };
         QTextCharFormat d_format[C_Max];
     };

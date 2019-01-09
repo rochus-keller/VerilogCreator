@@ -26,11 +26,6 @@ using namespace TextEditor;
 Highlighter1::Highlighter1(QTextDocument* parent) :
     SyntaxHighlighter(parent)
 {
-    d_lex.setIgnoreAttrs(false);
-    d_lex.setPackAttrs(false);
-    d_lex.setIgnoreComments(false);
-    d_lex.setPackComments(false);
-
     /*
     static QVector<TextStyle> categories;
     if (categories.isEmpty()) {
@@ -124,14 +119,16 @@ void Highlighter1::highlightBlock(const QString& text)
     lex.setPackAttrs(false);
     lex.setIgnoreComments(false);
     lex.setPackComments(false);
+    lex.setSendMacroUsage(true);
 
-    // Wenn man hier d_lex statt lokales Objekt verwendet, gibt es Crash bei ';'
-    // in d_lex sind mehrere d_source.push mit Text verschiedene Editstände einer Zeile
-    // Die Methode wird anscheinend rekursiv aufgerufen
     const QList<Token> tokens =  lex.tokens(text.mid(start));
     for( int i = 0; i < tokens.size(); ++i )
     {
         const Token &t = tokens.at(i);
+
+        if( t.d_substituted )
+            continue;
+
         QTextCharFormat f;
         if( t.d_type == Tok_Comment )
             f = formatForCategory(C_Cmt); // one line comment
