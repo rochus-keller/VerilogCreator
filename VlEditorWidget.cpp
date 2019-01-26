@@ -49,7 +49,7 @@ using namespace Vl;
 
 typedef QList<QTextEdit::ExtraSelection> ExtraSelections;
 
-EditorWidget1::EditorWidget1()
+EditorWidget1::EditorWidget1():d_outline(0)
 {
 }
 
@@ -80,6 +80,10 @@ void EditorWidget1::finalizeInitialization()
     d_outline->setContextMenuPolicy(Qt::ActionsContextMenu);
     connect(d_outline, SIGNAL(activated(int)), this, SLOT(gotoSymbolInEditor()));
     connect(d_outline, SIGNAL(currentIndexChanged(int)), this, SLOT(updateToolTip()));
+
+    OutlineMdl* outline = new OutlineMdl(this);
+    d_outline->setModel(outline);
+    connect( outline, SIGNAL(modelReset()), this, SLOT(onCursor()) );
 
     insertExtraToolBarWidget(TextEditorWidget::Left, d_outline );
 
@@ -213,7 +217,7 @@ void EditorWidget1::onUpdateCodeWarnings()
         QTextCursor c( doc->findBlockByNumber(e.d_line - 1) );
 
         c.setPosition( c.position() + e.d_col - 1 );
-        c.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+        c.movePosition(QTextCursor::EndOfWord, QTextCursor::KeepAnchor);
 
         QTextEdit::ExtraSelection sel;
         sel.format = errorFormat;
@@ -431,18 +435,24 @@ void EditorWidget1::onCursor()
             setExtraSelections(TextEditor::TextEditorWidget::CodeSemanticsSelection, ExtraSelections() );
     }
 
+    if( d_outline && d_outline->model() )
     {
         // update outline menu selection
-        OutlineMdl* mdl = static_cast<OutlineMdl*>( d_outline->model() );
+        OutlineMdl* mdl2 = static_cast<OutlineMdl*>( d_outline->model() );
         QModelIndex i;
         foreach( const CrossRefModel::SymRef& s, path )
         {
-            i = mdl->findSymbol( s.data() );
+            i = mdl2->findSymbol( s.data() );
             if( i.isValid() )
                 break;
         }
         if( !i.isValid() )
-            i = mdl->index(0,0);
+        {
+            Token t = mdl->findSectionBySourcePos( file, line, col );
+            i = mdl2->findSymbol( t.d_lineNr, t.d_colNr );
+        }
+        if( !i.isValid() )
+            i = mdl2->index(0,0);
         const bool blocked = d_outline->blockSignals(true);
         d_outline->setCurrentIndex(i);
         updateToolTip();
@@ -469,10 +479,8 @@ void EditorWidget1::onDocReady()
     Q_ASSERT(mdl != 0 );
     connect( mdl, SIGNAL(sigFileUpdated(QString)), this, SLOT(onFileUpdated(QString)) );
 
-    OutlineMdl* outline = new OutlineMdl(this);
+    OutlineMdl* outline = static_cast<OutlineMdl*>( d_outline->model() );
     outline->setFile(fileName);
-    d_outline->setModel(outline);
-    connect( outline, SIGNAL(modelReset()), this, SLOT(onCursor()) );
 
     if( !mdl->isEmpty() )
     {

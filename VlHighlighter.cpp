@@ -47,6 +47,7 @@ Highlighter1::Highlighter1(QTextDocument* parent) :
         d_format[i].setFontWeight(QFont::Normal);
         //d_format[i].setUnderlineStyle(QTextCharFormat::NoUnderline);
         d_format[i].setForeground(Qt::black);
+        d_format[i].setBackground(Qt::transparent);
     }
     d_format[C_Num].setForeground(QColor(0, 153, 153));
     d_format[C_Str].setForeground(QColor(208, 16, 64));
@@ -59,6 +60,13 @@ Highlighter1::Highlighter1(QTextDocument* parent) :
     d_format[C_Type].setFontWeight(QFont::Bold);
     d_format[C_Pp].setForeground(QColor(0, 134, 179));
     d_format[C_Pp].setFontWeight(QFont::Bold);
+
+    d_format[C_Section].setForeground(QColor(0, 128, 0));
+    d_format[C_Section].setBackground(QColor(230, 255, 230));
+    //d_format[C_Section].setFontWeight(QFont::Bold);
+    //d_format[C_Section].setFontUnderline(true);
+    //d_format[C_Section].setUnderlineColor(QColor(0, 200, 0));
+    //d_format[C_Section].setFontOverline(true);
 }
 
 QTextCharFormat Highlighter1::formatForCategory(int c) const
@@ -132,7 +140,18 @@ void Highlighter1::highlightBlock(const QString& text)
         QTextCharFormat f;
         if( t.d_type == Tok_Comment )
             f = formatForCategory(C_Cmt); // one line comment
-        else if( t.d_type == Tok_Lcmt )
+        else if( t.d_type == Tok_Section )
+        {
+            braceDepth++;
+            f = formatForCategory(C_Section);
+            //f.setFontOverline(true);
+            // setExtraAdditionalFormats funktioniert nicht
+        }else if( t.d_type == Tok_SectionEnd )
+        {
+            braceDepth--;
+            f = formatForCategory(C_Section);
+            // f.setFontUnderline(true);
+        }else if( t.d_type == Tok_Lcmt )
         {
             braceDepth++;
             f = formatForCategory(C_Cmt);
@@ -178,7 +197,7 @@ void Highlighter1::highlightBlock(const QString& text)
                 ++braceDepth;
                 // if a folding block opens at the beginning of a line, treat the entire line
                 // as if it were inside the folding block
-                if ( i == 0 && t.d_type == Tok_begin )
+                if ( i == 0 && ( t.d_type == Tok_begin || t.d_type == Tok_fork ) )
                 {
                     ++foldingIndent;
                     TextDocumentLayout::userData(currentBlock())->setFoldingStartIncluded(true);
@@ -205,7 +224,28 @@ void Highlighter1::highlightBlock(const QString& text)
         else if( t.d_type == Tok_SysName )
             f = formatForCategory(C_Kw);
         else if( t.d_type == Tok_CoDi )
+        {
+            Directive di = matchDirective(t.d_val);
+            switch(di)
+            {
+            case Cd_ifdef:
+            case Cd_ifndef:
+                braceDepth++;
+                break;
+            case Cd_else:
+            case Cd_elsif:
+                foldingIndent--;
+                break;
+            case Cd_endif:
+                braceDepth--;
+                break;
+            default:
+                break;
+            }
+
             f = formatForCategory(C_Pp);
+        }
+
         if( f.isValid() )
         {
             f.setProperty( TokenProp, int(t.d_type) );

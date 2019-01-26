@@ -87,7 +87,6 @@ void EditorDocument1::onProcess()
 {
     emit sigStartProcessing();
     const QString file = filePath().toString();
-    //qDebug() << "processing" << file;
     ModelManager::instance()->getFileCache()->addFile( file, plainText().toLatin1() );
     CrossRefModel* mdl = ModelManager::instance()->getModelForCurrentProject();
     if( mdl == 0 )

@@ -68,6 +68,16 @@ QModelIndex OutlineMdl::findSymbol(const CrossRefModel::Symbol* s)
     return QModelIndex();
 }
 
+QModelIndex OutlineMdl::findSymbol(quint32 line, quint16 col)
+{
+    for( int i = 0; i < d_rows.size(); i++ )
+    {
+        if( d_rows[i].d_sym->tok().d_lineNr == line && d_rows[i].d_sym->tok().d_colNr <= col )
+            return createIndex( i+1, 0, (quint32)i+1 );
+    }
+    return QModelIndex();
+}
+
 QModelIndex OutlineMdl::index(int row, int column, const QModelIndex& parent) const
 {
     if( parent.isValid() || row < 0 )
@@ -133,6 +143,8 @@ QVariant OutlineMdl::data(const QModelIndex& index, int role) const
         case SynTree::R_task_declaration:
         case SynTree::R_function_declaration:
             return QPixmap(":/verilogcreator/images/func.png");
+        case Tok_Section:
+            return QPixmap(":/verilogcreator/images/category.png");
         }
         return QVariant();
     }
@@ -171,6 +183,16 @@ void OutlineMdl::fillTop()
             s.d_name = sym->tok().d_val;
             d_rows.append( s );
             fillSubs( b, s.d_name );
+        }
+    }
+    foreach( const Token& t, d_crm->getSections(d_file) )
+    {
+        if( !t.d_val.isEmpty() )
+        {
+            Slot s;
+            s.d_sym = new CrossRefModel::Symbol(t);
+            s.d_name = t.d_val;
+            d_rows.append( s );
         }
     }
     std::sort( d_rows.begin(), d_rows.end() );

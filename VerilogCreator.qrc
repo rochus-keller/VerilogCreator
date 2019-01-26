@@ -7,5 +7,6 @@
         <file>images/func.png</file>
         <file>images/var.png</file>
         <file>images/block.png</file>
+        <file>images/category.png</file>
     </qresource>
 </RCC>

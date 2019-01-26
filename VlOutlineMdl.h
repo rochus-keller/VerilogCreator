@@ -35,6 +35,7 @@ namespace Vl
 
         const CrossRefModel::Symbol* getSymbol( const QModelIndex & ) const;
         QModelIndex findSymbol( const CrossRefModel::Symbol* );
+        QModelIndex findSymbol( quint32 line, quint16 col );
 
         // overrides
         QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
