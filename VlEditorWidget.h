@@ -39,6 +39,9 @@ namespace Vl
 
         void finalizeInitialization(); // override
 
+    signals:
+        void sigGotoSymbol( quint32 line, quint16 col );
+
     public slots:
         void onFindUsages();
         void onGotoOuterBlock();

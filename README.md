@@ -25,6 +25,7 @@ The plugin is still work in progress, but it already has enough functionality to
 - Verilator and Yosys build configurations; generate command files, optional arguments
 - Build configuration based on custom Tcl scripts which can access project configuration (e.g. to run Vivado commands)
 - Marker based code folding (MBCF); use section markers like //{ and //}, or //> and //<; see [screenshot 1](http://software.rochus-keller.info/vlcreator_mbcf_screenshot1.png) and [screenshot 2](http://software.rochus-keller.info/vlcreator_mbcf_screenshot2.png)
+- Outline view; see [screenshot 1](http://software.rochus-keller.info/vlcreator_outline_screenshot.png)
 
 
 ### Project file format

@@ -81,7 +81,7 @@ void EditorWidget1::finalizeInitialization()
     connect(d_outline, SIGNAL(activated(int)), this, SLOT(gotoSymbolInEditor()));
     connect(d_outline, SIGNAL(currentIndexChanged(int)), this, SLOT(updateToolTip()));
 
-    OutlineMdl* outline = new OutlineMdl(this);
+    OutlineMdl1* outline = new OutlineMdl1(this);
     d_outline->setModel(outline);
     connect( outline, SIGNAL(modelReset()), this, SLOT(onCursor()) );
 
@@ -438,18 +438,23 @@ void EditorWidget1::onCursor()
     if( d_outline && d_outline->model() )
     {
         // update outline menu selection
-        OutlineMdl* mdl2 = static_cast<OutlineMdl*>( d_outline->model() );
+        OutlineMdl1* mdl2 = static_cast<OutlineMdl1*>( d_outline->model() );
         QModelIndex i;
         foreach( const CrossRefModel::SymRef& s, path )
         {
             i = mdl2->findSymbol( s.data() );
             if( i.isValid() )
+            {
+                emit sigGotoSymbol( s->tok().d_lineNr, s->tok().d_colNr );
                 break;
+            }
         }
         if( !i.isValid() )
         {
-            Token t = mdl->findSectionBySourcePos( file, line, col );
-            i = mdl2->findSymbol( t.d_lineNr, t.d_colNr );
+            CrossRefModel::Section t = mdl->findSectionBySourcePos( file, line, col );
+            i = mdl2->findSymbol( t.d_lineFrom, col );
+            if( i.isValid() )
+                emit sigGotoSymbol( t.d_lineFrom, col );
         }
         if( !i.isValid() )
             i = mdl2->index(0,0);
@@ -479,7 +484,7 @@ void EditorWidget1::onDocReady()
     Q_ASSERT(mdl != 0 );
     connect( mdl, SIGNAL(sigFileUpdated(QString)), this, SLOT(onFileUpdated(QString)) );
 
-    OutlineMdl* outline = static_cast<OutlineMdl*>( d_outline->model() );
+    OutlineMdl1* outline = static_cast<OutlineMdl1*>( d_outline->model() );
     outline->setFile(fileName);
 
     if( !mdl->isEmpty() )
@@ -491,7 +496,7 @@ void EditorWidget1::onDocReady()
 
 void EditorWidget1::gotoSymbolInEditor()
 {
-    OutlineMdl* mdl = static_cast<OutlineMdl*>( d_outline->model() );
+    OutlineMdl1* mdl = static_cast<OutlineMdl1*>( d_outline->model() );
     const QModelIndex modelIndex = d_outline->view()->currentIndex();
 
     const CrossRefModel::Symbol* sym = mdl->getSymbol(modelIndex);
@@ -500,6 +505,7 @@ void EditorWidget1::gotoSymbolInEditor()
         Core::EditorManager::cutForwardNavigationHistory();
         Core::EditorManager::addCurrentPositionToNavigationHistory();
         gotoLine( sym->tok().d_lineNr, sym->tok().d_colNr - 1 );
+        emit sigGotoSymbol( sym->tok().d_lineNr, sym->tok().d_colNr );
         activateEditor();
     }
 }

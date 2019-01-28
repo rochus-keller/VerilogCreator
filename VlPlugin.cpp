@@ -25,6 +25,7 @@
 #include "VlEditorWidget.h"
 #include "VlConfigurationFactory.h"
 #include "VlProject.h"
+#include "VlOutlineWidget.h"
 #include <coreplugin/icore.h>
 #include <coreplugin/icontext.h>
 #include <coreplugin/actionmanager/actionmanager.h>
@@ -86,12 +87,9 @@ bool VerilogCreatorPlugin::initialize(const QStringList &arguments, QString *err
 
     addAutoReleasedObject(new Vl::EditorFactory1);
     addAutoReleasedObject(new Vl::EditorFactory2);
+    addAutoReleasedObject(new Vl::OutlineWidgetFactory);
     //TODO addAutoReleasedObject(new SymbolFilter([](const QString &file) {..
-#if VL_QTC_VER >= 0405
-    ProjectExplorer::ProjectManager::registerProjectType<Vl::Project>(Vl::Constants::ProjectMimeType);
-#else
     addAutoReleasedObject(new Vl::ProjectManager);
-#endif
     addAutoReleasedObject(new Vl::MakeStepFactory);
     addAutoReleasedObject(new Vl::BuildConfigurationFactory);
     addAutoReleasedObject(new Vl::RunConfigurationFactory);

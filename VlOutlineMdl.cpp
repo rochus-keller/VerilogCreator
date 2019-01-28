@@ -21,14 +21,15 @@
 #include "VlModelManager.h"
 #include <Verilog/VlSynTree.h>
 #include <QPixmap>
+#include <QtDebug>
 using namespace Vl;
 
-OutlineMdl::OutlineMdl(QObject *parent) : QAbstractItemModel(parent),d_crm(0)
+OutlineMdl1::OutlineMdl1(QObject *parent) : QAbstractItemModel(parent),d_crm(0)
 {
 
 }
 
-void OutlineMdl::setFile(const QString& f)
+void OutlineMdl1::setFile(const QString& f)
 {
     if( d_file == f )
         return;
@@ -44,7 +45,7 @@ void OutlineMdl::setFile(const QString& f)
     endResetModel();
 }
 
-const CrossRefModel::Symbol*OutlineMdl::getSymbol(const QModelIndex& index) const
+const CrossRefModel::Symbol*OutlineMdl1::getSymbol(const QModelIndex& index) const
 {
     if( !index.isValid() || d_crm == 0 )
         return 0;
@@ -55,7 +56,7 @@ const CrossRefModel::Symbol*OutlineMdl::getSymbol(const QModelIndex& index) cons
     return d_rows[id-1].d_sym.data();
 }
 
-QModelIndex OutlineMdl::findSymbol(const CrossRefModel::Symbol* s)
+QModelIndex OutlineMdl1::findSymbol(const CrossRefModel::Symbol* s)
 {
     if( s == 0 || s->tok().d_sourcePath != d_file )
         return QModelIndex();
@@ -68,7 +69,7 @@ QModelIndex OutlineMdl::findSymbol(const CrossRefModel::Symbol* s)
     return QModelIndex();
 }
 
-QModelIndex OutlineMdl::findSymbol(quint32 line, quint16 col)
+QModelIndex OutlineMdl1::findSymbol(quint32 line, quint16 col)
 {
     for( int i = 0; i < d_rows.size(); i++ )
     {
@@ -78,7 +79,7 @@ QModelIndex OutlineMdl::findSymbol(quint32 line, quint16 col)
     return QModelIndex();
 }
 
-QModelIndex OutlineMdl::index(int row, int column, const QModelIndex& parent) const
+QModelIndex OutlineMdl1::index(int row, int column, const QModelIndex& parent) const
 {
     if( parent.isValid() || row < 0 )
         return QModelIndex();
@@ -86,12 +87,12 @@ QModelIndex OutlineMdl::index(int row, int column, const QModelIndex& parent) co
     return createIndex( row, column, (quint32)row );
 }
 
-QModelIndex OutlineMdl::parent(const QModelIndex& index) const
+QModelIndex OutlineMdl1::parent(const QModelIndex& index) const
 {
     return QModelIndex();
 }
 
-int OutlineMdl::rowCount(const QModelIndex& parent) const
+int OutlineMdl1::rowCount(const QModelIndex& parent) const
 {
     if( parent.isValid() )
         return 0;
@@ -99,13 +100,13 @@ int OutlineMdl::rowCount(const QModelIndex& parent) const
         return d_rows.size() + 1; // +1 wegen <no symbol>
 }
 
-int OutlineMdl::columnCount(const QModelIndex& parent) const
+int OutlineMdl1::columnCount(const QModelIndex& parent) const
 {
     return 1;
 }
 
 
-QVariant OutlineMdl::data(const QModelIndex& index, int role) const
+QVariant OutlineMdl1::data(const QModelIndex& index, int role) const
 {
     if( !index.isValid() || d_crm == 0 )
         return QVariant();
@@ -151,13 +152,13 @@ QVariant OutlineMdl::data(const QModelIndex& index, int role) const
     return QVariant();
 }
 
-Qt::ItemFlags OutlineMdl::flags(const QModelIndex& index) const
+Qt::ItemFlags OutlineMdl1::flags(const QModelIndex& index) const
 {
     Q_UNUSED(index)
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable; //  | Qt::ItemIsDragEnabled;
 }
 
-void OutlineMdl::onCrmUpdated(const QString& file)
+void OutlineMdl1::onCrmUpdated(const QString& file)
 {
     if( file != d_file )
         return;
@@ -167,7 +168,7 @@ void OutlineMdl::onCrmUpdated(const QString& file)
     endResetModel();
 }
 
-void OutlineMdl::fillTop()
+void OutlineMdl1::fillTop()
 {
     if( d_crm == 0 )
         return;
@@ -185,20 +186,20 @@ void OutlineMdl::fillTop()
             fillSubs( b, s.d_name );
         }
     }
-    foreach( const Token& t, d_crm->getSections(d_file) )
+    foreach( const CrossRefModel::Section& t, d_crm->getSections(d_file) )
     {
-        if( !t.d_val.isEmpty() )
+        if( !t.d_title.isEmpty() )
         {
             Slot s;
-            s.d_sym = new CrossRefModel::Symbol(t);
-            s.d_name = t.d_val;
+            s.d_sym = new CrossRefModel::Symbol(Token(Tok_Section,t.d_lineFrom,1,0,t.d_title));
+            s.d_name = t.d_title;
             d_rows.append( s );
         }
     }
     std::sort( d_rows.begin(), d_rows.end() );
 }
 
-void OutlineMdl::fillSubs( const CrossRefModel::Branch* b, const QByteArray& name)
+void OutlineMdl1::fillSubs( const CrossRefModel::Branch* b, const QByteArray& name)
 {
     foreach( const CrossRefModel::SymRef& sym, b->children() )
     {
@@ -222,6 +223,200 @@ void OutlineMdl::fillSubs( const CrossRefModel::Branch* b, const QByteArray& nam
                 name2 += "." + b2->tok().d_val;
             fillSubs( b2, name2 );
         }
+    }
+}
+
+OutlineMdl2::OutlineMdl2(QObject *parent) :
+    QAbstractItemModel(parent),d_crm(0)
+{
+
+}
+
+void OutlineMdl2::setFile(const QString& f)
+{
+    if( d_file == f )
+        return;
+    beginResetModel();
+    d_root = Slot();
+    if( d_crm )
+        disconnect( d_crm, SIGNAL(sigFileUpdated(QString)), this, SLOT( onCrmUpdated(QString) ) );
+    d_file = f;
+    d_crm = ModelManager::instance()->getModelForCurrentProjectOrDirPath(f);
+    fillTop();
+    if( d_crm )
+        connect( d_crm, SIGNAL(sigFileUpdated(QString)), this, SLOT( onCrmUpdated(QString) ) );
+    endResetModel();
+}
+
+const CrossRefModel::Symbol*OutlineMdl2::getSymbol(const QModelIndex& index) const
+{
+    if( !index.isValid() || d_crm == 0 )
+        return 0;
+    Slot* s = static_cast<Slot*>( index.internalPointer() );
+    Q_ASSERT( s != 0 );
+    return s->d_sym.constData();
+}
+
+QModelIndex OutlineMdl2::findSymbol(quint32 line, quint16 col)
+{
+    return findSymbol( &d_root, line, col );
+}
+
+QVariant OutlineMdl2::data(const QModelIndex& index, int role) const
+{
+    if( !index.isValid() || d_crm == 0 )
+        return QVariant();
+
+    Slot* s = static_cast<Slot*>( index.internalPointer() );
+    Q_ASSERT( s != 0 );
+    switch( role )
+    {
+    case Qt::DisplayRole:
+        if( s->d_sym->tok().d_type == SynTree::R_module_or_udp_instance )
+            return s->d_sym->tok().d_val + " : " + s->d_sym->toBranch()->super()->tok().d_val;
+        else
+            return s->d_sym->tok().d_val; // + " " + QByteArray::number(s->d_sym->tok().d_lineNr);
+    case Qt::ToolTipRole:
+        return QVariant();
+    case Qt::DecorationRole:
+        switch( s->d_sym->tok().d_type )
+        {
+        case SynTree::R_module_declaration:
+        case SynTree::R_udp_declaration:
+            return QPixmap(":/verilogcreator/images/block.png");
+        case SynTree::R_module_or_udp_instance:
+            return QPixmap(":/verilogcreator/images/var.png");
+        case SynTree::R_task_declaration:
+        case SynTree::R_function_declaration:
+            return QPixmap(":/verilogcreator/images/func.png");
+        case Tok_Section:
+            return QPixmap(":/verilogcreator/images/category.png");
+        }
+        return QVariant();
+    }
+    return QVariant();
+}
+
+QModelIndex OutlineMdl2::parent ( const QModelIndex & index ) const
+{
+    if( index.isValid() )
+    {
+        Slot* s = static_cast<Slot*>( index.internalPointer() );
+        Q_ASSERT( s != 0 );
+        if( s->d_parent == &d_root )
+            return QModelIndex();
+        // else
+        Q_ASSERT( s->d_parent != 0 );
+        Q_ASSERT( s->d_parent->d_parent != 0 );
+        return createIndex( s->d_parent->d_parent->d_children.indexOf( s->d_parent ), 0, s->d_parent );
+    }else
+        return QModelIndex();
+}
+
+int OutlineMdl2::rowCount ( const QModelIndex & parent ) const
+{
+    if( parent.isValid() )
+    {
+        Slot* s = static_cast<Slot*>( parent.internalPointer() );
+        Q_ASSERT( s != 0 );
+        return s->d_children.size();
+    }else
+        return d_root.d_children.size();
+}
+
+QModelIndex OutlineMdl2::index ( int row, int column, const QModelIndex & parent ) const
+{
+    const Slot* s = &d_root;
+    if( parent.isValid() )
+    {
+        s = static_cast<Slot*>( parent.internalPointer() );
+        Q_ASSERT( s != 0 );
+    }
+    if( row < s->d_children.size() && column < columnCount( parent ) )
+        return createIndex( row, column, s->d_children[row] );
+    else
+        return QModelIndex();
+}
+
+Qt::ItemFlags OutlineMdl2::flags( const QModelIndex & index ) const
+{
+    Q_UNUSED(index)
+    return Qt::ItemIsEnabled | Qt::ItemIsSelectable; //  | Qt::ItemIsDragEnabled;
+}
+
+void OutlineMdl2::onCrmUpdated(const QString& file)
+{
+    if( file != d_file )
+        return;
+    beginResetModel();
+    d_root = Slot();
+    fillTop();
+    endResetModel();
+}
+
+void OutlineMdl2::fillTop()
+{
+    if( d_crm == 0 )
+        return;
+    CrossRefModel::SectionList sections = d_crm->getSections(d_file);
+    QListIterator<CrossRefModel::Section> i(sections);
+    CrossRefModel::SymRefList globals = d_crm->getGlobalSyms(d_file);
+
+    foreach( const CrossRefModel::SymRef& sym, globals )
+    {
+        fill( &d_root, sym.data(), i );
+    }
+}
+
+QModelIndex OutlineMdl2::findSymbol(OutlineMdl2::Slot* slot, quint32 line, quint16 col) const
+{
+    for( int i = 0; i < slot->d_children.size(); i++ )
+    {
+        Slot* s = slot->d_children[i];
+        if( s->d_sym->tok().d_lineNr == line && s->d_sym->tok().d_colNr <= col )
+            return createIndex( i, 0, s );
+        QModelIndex index = findSymbol( s, line, col );
+        if( index.isValid() )
+            return index;
+    }
+    return QModelIndex();
+
+}
+
+void OutlineMdl2::fill(Slot* super, const CrossRefModel::Symbol* sym , QListIterator<CrossRefModel::Section>& sec)
+{
+    while( sec.hasNext() && sym->tok().d_lineNr >= sec.peekNext().d_lineFrom )
+    {
+        CrossRefModel::Section section = sec.next();
+        if( !section.d_title.isEmpty() )
+        {
+            Slot* s = new Slot();
+            s->d_parent = super;
+            s->d_sym = new CrossRefModel::Symbol(Token(Tok_Section,section.d_lineFrom,1,0,section.d_title));
+            super->d_children.append( s );
+        }
+    }
+    switch( sym->tok().d_type )
+    {
+    case SynTree::R_module_declaration:
+    case SynTree::R_udp_declaration:
+    case SynTree::R_task_declaration:
+    case SynTree::R_function_declaration:
+    case SynTree::R_module_or_udp_instance:
+        if( !sym->tok().d_val.isEmpty() )
+        {
+            Slot* s = new Slot();
+            s->d_parent = super;
+            s->d_sym = sym;
+            super->d_children.append( s );
+            super = s;
+        }
+        break;
+    }
+
+    foreach( const CrossRefModel::SymRef& sub, sym->children() )
+    {
+        fill(super, sub.data(), sec );
     }
 }
 

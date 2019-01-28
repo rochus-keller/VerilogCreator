@@ -97,7 +97,10 @@ SOURCES += \
     VlYosysConfiguration.cpp \
     VlOutlineMdl.cpp \
     VlTclConfiguration.cpp \
-    VlTclEngine.cpp
+    VlTclEngine.cpp \
+    VlAutoCompleter.cpp \
+    VlCompletionAssistProvider.cpp \
+    VlOutlineWidget.cpp
 
 HEADERS += \
     verilogcreator_global.h \
@@ -120,7 +123,10 @@ HEADERS += \
     VlYosysConfiguration.h \
     VlOutlineMdl.h \
     VlTclConfiguration.h \
-    VlTclEngine.h
+    VlTclEngine.h \
+    VlAutoCompleter.h \
+    VlCompletionAssistProvider.h \
+    VlOutlineWidget.h
 
 include (../Verilog/Verilog.pri )
 
