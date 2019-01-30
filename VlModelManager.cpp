@@ -53,6 +53,7 @@ CrossRefModel*ModelManager::getModelForFile(const QString& fileName)
     {
         m = new CrossRefModel(this,d_fcache);
         connect( m, SIGNAL(sigModelUpdated()), this, SLOT(onModelUpdated()) );
+        d_paths[m] = fileName;
     }
     d_lastUsed = m;
     return m;
@@ -93,6 +94,11 @@ CrossRefModel*ModelManager::getModelForCurrentProjectOrDirPath(const QString& di
     if( mdl == 0 )
         mdl = ModelManager::instance()->getModelForDir(dirPath, initIfEmpty);
     return mdl;
+}
+
+QString ModelManager::getPathOf(CrossRefModel* m) const
+{
+    return d_paths.value(m);
 }
 
 ModelManager*ModelManager::instance()

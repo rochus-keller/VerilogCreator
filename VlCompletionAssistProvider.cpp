@@ -18,34 +18,92 @@
 */
 
 #include "VlCompletionAssistProvider.h"
+#include "VlConstants.h"
 #include <texteditor/codeassist/iassistproposal.h>
 #include <texteditor/codeassist/assistinterface.h>
 #include <texteditor/codeassist/iassistprocessor.h>
+#include <texteditor/codeassist/assistproposalitem.h>
+#include <texteditor/codeassist/genericproposalmodel.h>
+#include <texteditor/codeassist/genericproposal.h>
 #include <coreplugin/id.h>
+#include <QTextBlock>
+#include <QTextDocument>
 #include <QtDebug>
 
 namespace Vl
 {
+    // borrowed from RubyCreator
+    static const QString &nameFor(const QString &s)
+    {
+        return s;
+    }
+    template<typename T>
+    static void addProposalFromSet(QList<TextEditor::AssistProposalItem*> &proposals,
+                                   const T &container, const QString &myTyping,
+                                   const QIcon &icon, int order = 0)
+    {
+        foreach (const typename T::value_type &item, container)
+        {
+            const QString &name = nameFor(item);
+            if (myTyping == name)
+                continue;
+
+            auto proposal = new TextEditor::AssistProposalItem();
+
+            int indexOfParenthesis = name.indexOf(QLatin1Char('('));
+            if (indexOfParenthesis != -1) {
+                proposal->setText(name.mid(0, indexOfParenthesis));
+                proposal->setDetail(name);
+            } else {
+                proposal->setText(name);
+            }
+
+            proposal->setIcon(icon);
+            proposal->setOrder(order);
+            proposals << proposal;
+        }
+    }
+
     class CompletionAssistProcessor : public TextEditor::IAssistProcessor
     {
     public:
         CompletionAssistProcessor() {}
         ~CompletionAssistProcessor()
         {
-            qDebug() << "CompletionAssistProcessor deleted";
+            //qDebug() << "CompletionAssistProcessor deleted";
         }
-
-        TextEditor::IAssistProposal* perform(const TextEditor::AssistInterface *interface)
+        TextEditor::IAssistProposal* perform(const TextEditor::AssistInterface *ai)
         {
-            m_interface.reset(interface);
+            m_interface.reset(ai);
 
-            qDebug() << "CompletionAssistProcessor::perform";
-            return 0;
-        }
-        TextEditor::IAssistProposal *immediateProposal(const TextEditor::AssistInterface *)
-        {
-            qDebug() << "CompletionAssistProcessor::immediateProposal";
-            return 0;
+            if (ai->reason() == TextEditor::IdleEditor)
+                return 0;
+
+            const int startPosition = ai->position();
+
+            const QTextBlock block = ai->textDocument()->findBlock(startPosition);
+            const int linePosition = startPosition - block.position();
+            const QString line = ai->textDocument()->findBlock(startPosition).text();
+
+
+            const QString myTyping = ai->textAt(startPosition, ai->position() - startPosition);
+            const QString fileName = ai->fileName();
+
+            qDebug() << "perform" << line << myTyping;
+
+            QList<TextEditor::AssistProposalItem *> proposals;
+
+            QStringList tmp;
+            tmp << "alpha" << "beta" << "gamma";
+            addProposalFromSet(proposals, tmp, myTyping, QIcon(), 1);
+
+            if( proposals.isEmpty() )
+                return 0;
+
+            TextEditor::GenericProposalModel *model = new TextEditor::GenericProposalModel();
+            model->loadContent(proposals);
+            TextEditor::IAssistProposal *proposal = new TextEditor::GenericProposal(startPosition, model);
+            return proposal;
         }
     private:
         QScopedPointer<const TextEditor::AssistInterface> m_interface;
@@ -61,12 +119,32 @@ TextEditor::IAssistProvider::RunType CompletionAssistProvider::runType() const
 
 bool CompletionAssistProvider::supportsEditor(Core::Id editorId) const
 {
-    qDebug() << "CompletionAssistProvider::supportsEditor" << editorId;
-    return false;
+    return editorId == Constants::EditorId1;
 }
 
 TextEditor::IAssistProcessor*CompletionAssistProvider::createProcessor() const
 {
-    qDebug() << "CompletionAssistProvider::createProcessor";
     return new CompletionAssistProcessor();
+}
+
+bool CompletionAssistProvider::isActivationCharSequence(const QString& sequence) const
+{
+    if( sequence.size() < SeqLen )
+        return false;
+    const QChar cur = sequence[SeqLen-1];
+    const QChar before1 = sequence[SeqLen-2];
+    const QChar before2 = sequence[SeqLen-3];
+    //qDebug() << "isActivationCharSequence" << before2 << before1 << ch;
+    if( cur == '.' || cur == '(' || cur == '`' )
+        return true;
+    if( false ) // cur.isLetter() || cur == '$' || cur == '_' || cur == '`' )
+        return true;
+    else
+        return false;
+}
+
+bool CompletionAssistProvider::isContinuationChar(const QChar& c) const
+{
+    //qDebug() << "isContinuationChar" << c;
+    return c.isLetterOrNumber() || c == '_' || c == '$';
 }

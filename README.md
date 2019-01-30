@@ -12,21 +12,21 @@ The plugin is still work in progress, but it already has enough functionality to
 
 ### Implemented Features
 
-- Syntax highlighting (including ifdefed out blocks)
+- Syntax highlighting (including ifdefed out blocks and markers)
 - Inline code warnings and errors 
 - Parentheses and begin/end block matching/navigation
 - Hover tooltips
 - Follow symbol under cursor, follow includes (multi-file support)
-- Drop-down menu to jump to modules, module instances, functions and tasks in current file  
 - Show where a symbol is used 
-- Code folding and some other features supported by QtCreator, see http://doc.qt.io/qtcreator/
+- Drop-down menu to jump to modules, module instances, functions and tasks in current file  
+- Outline view; see [screenshot](http://software.rochus-keller.info/vlcreator_outline_screenshot.png)
+- Module locator (global) and symbol locator (current document); see [screenshot 1](http://software.rochus-keller.info/vlcreator_module_locator_screenshot.png) and [screenshot 2](http://software.rochus-keller.info/vlcreator_symbol_locator_screenshot.png)
+- Syntax based code folding and some other features supported by QtCreator, see http://doc.qt.io/qtcreator/
+- Marker based code folding (MBCF); use section markers like //{ and //}, or //> and //<; see [screenshot 1](http://software.rochus-keller.info/vlcreator_mbcf_screenshot1.png) and [screenshot 2](http://software.rochus-keller.info/vlcreator_mbcf_screenshot2.png)
 - Project file to configure source files, include dirs, defines and libraries
 - Icarus Verilog build and run configuration; directly run compiler and simulator from within QtCreator
 - Verilator and Yosys build configurations; generate command files, optional arguments
 - Build configuration based on custom Tcl scripts which can access project configuration (e.g. to run Vivado commands)
-- Marker based code folding (MBCF); use section markers like //{ and //}, or //> and //<; see [screenshot 1](http://software.rochus-keller.info/vlcreator_mbcf_screenshot1.png) and [screenshot 2](http://software.rochus-keller.info/vlcreator_mbcf_screenshot2.png)
-- Outline view; see [screenshot 1](http://software.rochus-keller.info/vlcreator_outline_screenshot.png)
-
 
 ### Project file format
 
@@ -120,8 +120,6 @@ Since I currently consider the effort to reverse engineer each QtCreator version
 - Documentation
 - Semantic indenter (the current one simply adjusts to the previous line)
 - Parse output of Icarus/Verilator/Yosys and post it to the Issues pane
-- Implement locator popup
-- Implement outline and include panes
 - Implement wizzard to add or import files, generate stub modules and automatically update the vlpro file
 - Improve hover text
 - Implement options dialog (format settings, paths, etc.)

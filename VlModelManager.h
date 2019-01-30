@@ -39,6 +39,7 @@ namespace Vl
         CrossRefModel* getModelForCurrentProject();
         CrossRefModel* getModelForCurrentProjectOrDirPath(const QString& dirPath , bool initIfEmpty = false);
         CrossRefModel* getLastUsed() const { return d_lastUsed; }
+        QString getPathOf(CrossRefModel*) const;
 
         FileCache* getFileCache() const { return d_fcache; }
 
@@ -50,6 +51,7 @@ namespace Vl
     private:
         static ModelManager* d_inst;
         QHash<QString,CrossRefModel*> d_models; // Project File -> Code Model
+        QHash<CrossRefModel*,QString> d_paths;
         CrossRefModel* d_lastUsed;
         FileCache* d_fcache;
     };

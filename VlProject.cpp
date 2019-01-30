@@ -78,8 +78,6 @@ Project::Project(ProjectManager* projectManager, const QString& fileName):
     loadProject(fileName);
     d_watcher.addPath(fileName);
     connect( &d_watcher, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)) );
-    d_tcl = new TclEngine(this);
-    d_tcl->setGetVar(tclGetVar,this);
 }
 
 QStringList Project::getConfig(const QString& key) const
@@ -400,21 +398,6 @@ void Project::fillNode(const QStringList& files, ProjectExplorer::FolderNode* ro
                                                                     ProjectExplorer::SourceType, false));
         i++;
     }
-}
-
-QStringList Project::tclGetVar(const QByteArray& name, void* data)
-{
-    //qDebug() << "tclGetVar called" << name;
-    const QByteArray lower = name.toLower();
-    Project* p = static_cast<Project*>(data);
-    if( lower == "srcfiles" )
-        return p->getSrcFiles();
-    else if( lower == "libfiles" )
-        return p->getLibFiles();
-    else if( lower == "incdirs" )
-        return p->getIncDirs();
-    else
-        return p->getConfig( name );
 }
 
 #if VL_QTC_VER >= 0306

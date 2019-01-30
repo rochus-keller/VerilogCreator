@@ -1,5 +1,5 @@
-#ifndef VLCOMPLETIONASSISTPROVIDER_H
-#define VLCOMPLETIONASSISTPROVIDER_H
+#ifndef VLSYMBOLLOCATOR_H
+#define VLSYMBOLLOCATOR_H
 
 /*
 * Copyright 2019 Rochus Keller <mailto:me@rochus-keller.ch>
@@ -20,25 +20,22 @@
 * http://www.gnu.org/copyleft/gpl.html.
 */
 
-#include <texteditor/codeassist/assistenums.h>
-#include <texteditor/codeassist/completionassistprovider.h>
+#include <coreplugin/locator/ilocatorfilter.h>
 
 namespace Vl
 {
-    class CompletionAssistProvider : public TextEditor::CompletionAssistProvider
+    class SymbolLocator : public Core::ILocatorFilter
     {
         Q_OBJECT
     public:
-        enum { SeqLen = 3 };
+        SymbolLocator();
 
         // overrides
-        RunType runType() const;
-        bool supportsEditor(Core::Id editorId) const;
-        TextEditor::IAssistProcessor* createProcessor() const;
-        int activationCharSequenceLength() const { return SeqLen; }
-        bool isActivationCharSequence(const QString &sequence) const;
-        bool isContinuationChar(const QChar &c) const;
+        QList<Core::LocatorFilterEntry> matchesFor(QFutureInterface<Core::LocatorFilterEntry> &future,
+                                                   const QString &entry);
+        void accept(Core::LocatorFilterEntry selection) const;
+        void refresh(QFutureInterface<void> &future);
     };
 }
 
-#endif // VLCOMPLETIONASSISTPROVIDER_H
+#endif // VLSYMBOLLOCATOR_H

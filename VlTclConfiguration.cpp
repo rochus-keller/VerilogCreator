@@ -134,9 +134,16 @@ void TclBuildConfigWidget::environmentChanged()
 }
 
 TclStep::TclStep(ProjectExplorer::BuildStepList* parent):
-    AbstractProcessStep(parent, ID)
+    AbstractProcessStep(parent, ID),d_tcl(0)
 {
     setDefaultDisplayName(tr("Tcl") );
+    d_tcl = TclEngine::addRef();
+}
+
+TclStep::~TclStep()
+{
+    if( d_tcl )
+        TclEngine::release();
 }
 
 bool TclStep::init()
@@ -158,7 +165,7 @@ bool TclStep::init()
     Vl::Project* p = dynamic_cast<Vl::Project*>( project() );
     Q_ASSERT( p != 0 );
 
-    if( !p->getTcl()->isReady() )
+    if( !d_tcl->isReady() )
     {
         emit addTask(ProjectExplorer::Task(ProjectExplorer::Task::Error,
                        tr( "The Tcl interpreter is not ready."),
@@ -213,17 +220,19 @@ void TclStep::run(QFutureInterface<bool>& fi)
     processStarted();
 
     Vl::Project* p = dynamic_cast<Vl::Project*>( project() );
-    p->getTcl()->setWriteLog(writeLog,this);
+    d_tcl->setWriteLog(writeLog,this);
+    d_tcl->setGetVar(tclGetVar,p);
     int res = 0;
-    if( !p->getTcl()->runFile( d_scriptFile ) )
+    if( !d_tcl->runFile( d_scriptFile ) )
         res = -1;
-    p->getTcl()->setWriteLog(0,0);
+    d_tcl->setWriteLog(0,0);
+    d_tcl->setGetVar(0,0);
 
     // AbstractProcessStep::run(fi);
     // startet einen Prozess; wir machen das hier selber
 
     // processFinished( res, QProcess::NormalExit ); // uses m_process
-    QString str = p->getTcl()->getResult().trimmed();
+    QString str = d_tcl->getResult().trimmed();
     if( !str.isEmpty() )
         str = " : " + str;
     emit addOutput(tr("The script \"%1\" exited with code %2%3").arg(d_scriptFile).arg(res).arg(str),
@@ -264,6 +273,21 @@ void TclStep::writeLog(const QByteArray& msg, bool err, void* data)
         p->stdError(QString::fromUtf8(msg));
     else
         p->stdOutput(QString::fromUtf8(msg));
+}
+
+QStringList TclStep::tclGetVar(const QByteArray& name, void* data)
+{
+    //qDebug() << "tclGetVar called" << name;
+    const QByteArray lower = name.toLower();
+    Project* p = static_cast<Project*>(data);
+    if( lower == "srcfiles" )
+        return p->getSrcFiles();
+    else if( lower == "libfiles" )
+        return p->getLibFiles();
+    else if( lower == "incdirs" )
+        return p->getIncDirs();
+    else
+        return p->getConfig( name );
 }
 
 QString TclStep::makeCommand(const Utils::Environment& ) const

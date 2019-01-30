@@ -67,6 +67,8 @@ namespace Vl
         TclBuildConfig* d_conf;
     };
 
+    class TclEngine;
+
     class TclStep : public ProjectExplorer::AbstractProcessStep
     {
         Q_OBJECT
@@ -74,6 +76,7 @@ namespace Vl
         static const char* ID;
 
         explicit TclStep(ProjectExplorer::BuildStepList *parent);
+        ~TclStep();
 
         bool init();
         void run(QFutureInterface<bool> &fi);
@@ -84,8 +87,10 @@ namespace Vl
         QString makeCommand(const Utils::Environment &environment) const;
         bool fromMap(const QVariantMap &map);
         static void writeLog(const QByteArray& msg, bool err, void* data);
+        static QStringList tclGetVar(const QByteArray& name, void* data);
     private:
         QString d_scriptFile;
+        TclEngine* d_tcl;
         friend class TclMakeStepWidget;
     };
 

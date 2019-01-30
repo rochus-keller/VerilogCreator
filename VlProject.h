@@ -23,7 +23,6 @@
 #include <projectexplorer/project.h>
 
 #include <QFileSystemWatcher>
-#include "VlTclEngine.h"
 
 namespace TextEditor { class TextDocument; }
 namespace ProjectExplorer { class FolderNode; }
@@ -46,7 +45,6 @@ namespace Vl
         QStringList getConfig( const QString& key ) const;
         QStringList getIncDirs() const;
         QString getTopMod() const;
-        TclEngine* getTcl() const { return d_tcl; }
         void reload();
 
         // overrides
@@ -61,7 +59,6 @@ namespace Vl
         static void findFilesInDirs( const QStringList& dirs, const QStringList& filter, QSet<QString>& files );
         static void findFilesInDir(const QString& dir, const QStringList& filter, QStringList& files , bool recursive);
         static void fillNode( const QStringList& files, ProjectExplorer::FolderNode* );
-        static QStringList tclGetVar(const QByteArray& name, void* data);
 
 #if VL_QTC_VER >= 0306
         RestoreResult fromMap(const QVariantMap &map, QString *errorMessage) Q_DECL_OVERRIDE;
@@ -78,7 +75,6 @@ namespace Vl
         QStringList d_srcFiles, d_libFiles, d_incDirs;
         QMap<QString, QStringList> d_config;
         QFileSystemWatcher d_watcher;
-        TclEngine* d_tcl;
     };
 }
 

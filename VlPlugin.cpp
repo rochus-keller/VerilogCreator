@@ -26,6 +26,9 @@
 #include "VlConfigurationFactory.h"
 #include "VlProject.h"
 #include "VlOutlineWidget.h"
+#include "VlModuleLocator.h"
+#include "VlCompletionAssistProvider.h"
+#include "VlSymbolLocator.h"
 #include <coreplugin/icore.h>
 #include <coreplugin/icontext.h>
 #include <coreplugin/actionmanager/actionmanager.h>
@@ -38,9 +41,6 @@
 #include <utils/mimetypes/mimedatabase.h>
 #include <coreplugin/editormanager/editormanager.h>
 #include <texteditor/texteditorconstants.h>
-#if VL_QTC_VER >= 0405
-#include <projectexplorer/projectmanager.h>
-#endif
 
 #include <QAction>
 #include <QMessageBox>
@@ -88,7 +88,8 @@ bool VerilogCreatorPlugin::initialize(const QStringList &arguments, QString *err
     addAutoReleasedObject(new Vl::EditorFactory1);
     addAutoReleasedObject(new Vl::EditorFactory2);
     addAutoReleasedObject(new Vl::OutlineWidgetFactory);
-    //TODO addAutoReleasedObject(new SymbolFilter([](const QString &file) {..
+    addAutoReleasedObject(new Vl::ModuleLocator);
+    addAutoReleasedObject(new Vl::SymbolLocator);
     addAutoReleasedObject(new Vl::ProjectManager);
     addAutoReleasedObject(new Vl::MakeStepFactory);
     addAutoReleasedObject(new Vl::BuildConfigurationFactory);
@@ -100,7 +101,7 @@ bool VerilogCreatorPlugin::initialize(const QStringList &arguments, QString *err
 
     //addAutoReleasedObject(new ProjectWizard);
 
-    //addAutoReleasedObject(new CompletionAssistProvider);
+    //addAutoReleasedObject(new Vl::CompletionAssistProvider);
 
     Core::Context context(Vl::Constants::EditorId1);
     Core::ActionContainer *contextMenu1 = Core::ActionManager::createMenu(Vl::Constants::EditorContextMenuId1);

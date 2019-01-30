@@ -100,7 +100,9 @@ SOURCES += \
     VlTclEngine.cpp \
     VlAutoCompleter.cpp \
     VlCompletionAssistProvider.cpp \
-    VlOutlineWidget.cpp
+    VlOutlineWidget.cpp \
+    VlModuleLocator.cpp \
+    VlSymbolLocator.cpp
 
 HEADERS += \
     verilogcreator_global.h \
@@ -126,7 +128,9 @@ HEADERS += \
     VlTclEngine.h \
     VlAutoCompleter.h \
     VlCompletionAssistProvider.h \
-    VlOutlineWidget.h
+    VlOutlineWidget.h \
+    VlModuleLocator.h \
+    VlSymbolLocator.h
 
 include (../Verilog/Verilog.pri )
 

@@ -39,10 +39,10 @@ namespace Vl
         bool runFile( const QString& );
         QString getResult() const;
 
-        struct Imp;
-    protected:
         static TclEngine* addRef();
         static void release();
+
+        struct Imp;
     private:
         Imp* d_imp;
     };

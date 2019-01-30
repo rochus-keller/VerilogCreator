@@ -272,7 +272,7 @@ TclEngine*TclEngine::addRef()
 {
     if( s_refCount <= 0 )
     {
-        //qDebug() << "TCL create";
+        qDebug() << "TCL create";
         s_refCount = 0;
         s_inst = new TclEngine();
     }
@@ -285,7 +285,7 @@ void TclEngine::release()
     s_refCount--;
     if( s_refCount == 0 )
     {
-        //qDebug() << "TCL delete";
+        qDebug() << "TCL delete";
         delete s_inst;
         s_inst = 0;
     }
