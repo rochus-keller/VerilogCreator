@@ -13,6 +13,7 @@ The plugin is still work in progress, but it already has enough functionality to
 ### Implemented Features
 
 - Syntax highlighting (including ifdefed out blocks and markers)
+- Context sensitive code completer, see [screenshot](http://software.rochus-keller.info/vlcreator_completer_screenshot.png)
 - Inline code warnings and errors 
 - Parentheses and begin/end block matching/navigation
 - Hover tooltips
@@ -123,7 +124,7 @@ Since I currently consider the effort to reverse engineer each QtCreator version
 - Implement wizzard to add or import files, generate stub modules and automatically update the vlpro file
 - Improve hover text
 - Implement options dialog (format settings, paths, etc.)
-- Code completion
+- Improve code completer (for hierarchical identifiers)
 - Integrate wave viewer
 - Implement selected SystemVerilog syntax features as needed
 

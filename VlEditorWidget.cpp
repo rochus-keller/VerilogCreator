@@ -435,6 +435,10 @@ void EditorWidget1::onCursor()
             setExtraSelections(TextEditor::TextEditorWidget::CodeSemanticsSelection, ExtraSelections() );
     }
 
+//    path = mdl->findSymbolBySourcePos( file, line, col, false, true );
+//    if( !path.isEmpty() )
+//        qDebug() << "***** hit area in" << SynTree::rToStr(path.first()->tok().d_type) << path.first()->tok().d_val;
+
     if( d_outline && d_outline->model() )
     {
         // update outline menu selection

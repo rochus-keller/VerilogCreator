@@ -101,8 +101,6 @@ bool VerilogCreatorPlugin::initialize(const QStringList &arguments, QString *err
 
     //addAutoReleasedObject(new ProjectWizard);
 
-    //addAutoReleasedObject(new Vl::CompletionAssistProvider);
-
     Core::Context context(Vl::Constants::EditorId1);
     Core::ActionContainer *contextMenu1 = Core::ActionManager::createMenu(Vl::Constants::EditorContextMenuId1);
     Core::ActionContainer * contextMenu2 = Core::ActionManager::createMenu(Vl::Constants::EditorContextMenuId2);

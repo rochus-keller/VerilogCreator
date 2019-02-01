@@ -44,8 +44,8 @@ EditorFactory1::EditorFactory1()
     setIndenterCreator([]() { return new Indenter; });
     setEditorWidgetCreator([]() { return new EditorWidget1; });
     setEditorCreator([]() { return new Editor1; });
-    //setAutoCompleterCreator([]() { return new AutoCompleter; });
-    //setCompletionAssistProvider(new CompletionAssistProvider);
+    setAutoCompleterCreator([]() { return new AutoCompleter; });
+    setCompletionAssistProvider(new CompletionAssistProvider);
     setSyntaxHighlighterCreator([]() { return new Highlighter1; });
     setCommentStyle(Utils::CommentDefinition::CppStyle);
     setParenthesesMatchingEnabled(true);

@@ -22,6 +22,7 @@
 
 #include <texteditor/codeassist/assistenums.h>
 #include <texteditor/codeassist/completionassistprovider.h>
+#include <Verilog/VlToken.h>
 
 namespace Vl
 {
@@ -29,7 +30,9 @@ namespace Vl
     {
         Q_OBJECT
     public:
-        enum { SeqLen = 3 };
+        enum { SeqLen = 4 };
+
+        static int checkSequence(const QString& , int minLen = 1 );
 
         // overrides
         RunType runType() const;
