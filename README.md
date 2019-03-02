@@ -28,6 +28,7 @@ The plugin is still work in progress, but it already has enough functionality to
 - Icarus Verilog build and run configuration; directly run compiler and simulator from within QtCreator
 - Verilator and Yosys build configurations; generate command files, optional arguments
 - Build configuration based on custom Tcl scripts which can access project configuration (e.g. to run Vivado commands)
+- Selected optional SystemVerilog syntax extensions such as assert, assume, cover and restrict (see [here for more information](###supported-systemverilog-subset))
 
 ### Project file format
 
@@ -83,6 +84,27 @@ There is also a variable `BUILD_UNDEFS` by which defines can be deactivated in t
 
 Use TOPMOD to explicitly set the top-level module; this is useful in case there is more than one top-level module in the code base. VerilogCreator does not use this information but hands it over to Icarus, Verilator and Yosys.
 
+`SVEXT = `
+
+This variable is used to tell the parser which files should be considered SystemVerilog files; default is ".sv"; the parser will enable the SV extension for these files in any case, regardless of the UseSvExtension option. 
+
+`CONFIG += UseSvExtension`
+
+Use this option to enable the SystemVerilog extension for the whole project. Without this option, all files are assumed to be in Verilog 05 format besides the files whose suffix corresponds to one in SVEXT. With the option enabled all files are assumed to be in the supported SystemVerilog 2012 subset.
+
+### Supported SystemVerilog subset
+
+If enabled (see the SVEXT and UseSvExtension project file options) the VerilogCreator plugin supports the following subset of SystemVerilog as specified in IEEE 1800-2012:
+
+- assert_property_statement, simple_immediate_assert_statement and deferred_immediate_assert_statement
+- assume_property_statement, simple_immediate_assume_statement and deferred_immediate_assume_statement
+- cover_sequence_statement, cover_property_statement, simple_immediate_cover_statement and deferred_immediate_cover_statement
+- restrict_property_statement
+- deferred_immediate_assertion_item
+- concurrent_assertion_item
+- property_spec, without property_instance, checker_instantiation
+- sequence_expr, without sequence_abbrev, sequence_match_item, first_match
+
 ### Download Binaries
 
 Pre-compiled versions of the VerilogCreator plugin can be downloaded for Windows, Linux and Macintosh as part of the QtcVerilog application.
@@ -126,7 +148,7 @@ Since I currently consider the effort to reverse engineer each QtCreator version
 - Implement options dialog (format settings, paths, etc.)
 - Improve code completer (for hierarchical identifiers)
 - Integrate wave viewer
-- Implement selected SystemVerilog syntax features as needed
+- Extend SystemVerilog support, goal is to support everything Verilator does.
 
 ### Support
 If you need support or would like to post issues or feature requests please use the Github issue list at https://github.com/rochus-keller/VerilogCreator/issues or send an email to the author.
