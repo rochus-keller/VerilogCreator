@@ -18,6 +18,7 @@
 */
 
 #include "VlHighlighter.h"
+#include "VlModelManager.h"
 #include <texteditor/textdocumentlayout.h>
 #include <QBuffer>
 using namespace Vl;
@@ -128,6 +129,8 @@ void Highlighter1::highlightBlock(const QString& text)
     lex.setIgnoreComments(false);
     lex.setPackComments(false);
     lex.setSendMacroUsage(true);
+    if( ModelManager::instance()->getLastUsed() )
+        lex.setCache( ModelManager::instance()->getLastUsed()->getFcache() );
 
     const QList<Token> tokens =  lex.tokens(text.mid(start));
     for( int i = 0; i < tokens.size(); ++i )
@@ -161,7 +164,7 @@ void Highlighter1::highlightBlock(const QString& text)
             braceDepth--;
             f = formatForCategory(C_Cmt);
             lexerState = 0;
-        }else if( t.d_type == Tok_String )
+        }else if( t.d_type == Tok_Str )
             f = formatForCategory(C_Str);
         else if( tokenIsNumber(t.d_type) )
             f = formatForCategory(C_Num);

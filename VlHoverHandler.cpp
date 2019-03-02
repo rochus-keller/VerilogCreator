@@ -64,9 +64,9 @@ static QString prettyPrint( const PpSymbols::Define& d )
 
     foreach( const Token& t, d.d_toks )
     {
-        if( t.d_type < Tok_String )
+        if( t.d_type < TT_Specials )
             out << t.getName();
-        else if( t.d_type  == Tok_String )
+        else if( t.d_type  == Tok_Str )
             out << "\"" << escape(t.d_val) << "\"";
         else if( t.d_type == Tok_SysName )
             out << "$" << t.d_val;
@@ -99,7 +99,8 @@ void HoverHandler::identifyMatch(TextEditor::TextEditorWidget* editorWidget, int
     const int col = cur.columnNumber() + 1;
 
     int tokPos;
-    QList<Token> toks = CrossRefModel::findTokenByPos( cur.block().text(), col, &tokPos );
+    QList<Token> toks = CrossRefModel::findTokenByPos( cur.block().text(), col, &tokPos,
+                                                       mdl->getFcache()->supportSvExt(file) );
     if( tokPos != -1 )
     {
         const Token& t = toks[tokPos];
@@ -108,7 +109,7 @@ void HoverHandler::identifyMatch(TextEditor::TextEditorWidget* editorWidget, int
             PpSymbols::Define d = mdl->getSyms()->getSymbol( t.d_val );
             if( !d.d_name.isEmpty() )
                 setToolTip( prettyPrint(d) );
-        }else if( t.d_type == Tok_String && tokPos > 0 && toks[tokPos-1].d_type == Tok_CoDi &&
+        }else if( t.d_type == Tok_Str && tokPos > 0 && toks[tokPos-1].d_type == Tok_CoDi &&
                   matchDirective(toks[tokPos-1].d_val) == Cd_include )
         {
             const QString path = mdl->getIncs()->findPath( t.d_val, file );

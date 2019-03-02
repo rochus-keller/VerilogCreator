@@ -183,13 +183,14 @@ void Project::loadProject(const QString& fileName)
 
     d_config["SRCEXT"] << ".v"; // Preset
     d_config["LIBEXT"] << ".v";
+    d_config["SVEXT"] << ".sv";
 
     ProjectFile p( d_config );
     if( !p.read(fileName) )
         return; // TODO: Error Message
 
     d_config = p.variables();
-    // qDebug() << d_config; // TEST
+    //qDebug() << d_config; // TEST
 
     QStringList defs = d_config.value("DEFINES");
     defs.sort();
@@ -220,6 +221,9 @@ void Project::loadProject(const QString& fileName)
             d_incDirs.append(path);
         }
     }
+
+    mdl->getFcache()->setSvSuffix(d_config["SVEXT"]);
+    mdl->getFcache()->setSupportSvExt(d_config["CONFIG"].contains("UseSvExtension") );
 
     QStringList filter = d_config["LIBEXT"];
     for( int i = 0; i < filter.size(); i++ )
@@ -459,7 +463,7 @@ bool Project::fromMap(const QVariantMap& map)
 
 void Project::onFileChanged(const QString& path)
 {
-    qDebug() << "File changed" << path;
+    //qDebug() << "File changed" << path;
     const QString proPath = d_document->filePath().toString();
     if( path == proPath )
     {

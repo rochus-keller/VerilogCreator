@@ -268,7 +268,8 @@ TextEditor::TextEditorWidget::Link EditorWidget1::findLinkAt(const QTextCursor& 
     const int col = cur.columnNumber() + 1;
 
     int tokPos;
-    QList<Token> toks = CrossRefModel::findTokenByPos( cur.block().text(), col, &tokPos );
+    QList<Token> toks = CrossRefModel::findTokenByPos( cur.block().text(), col, &tokPos,
+                                                       mdl->getFcache()->supportSvExt(file) );
     if( tokPos != -1 )
     {
         const Token& t = toks[tokPos];
@@ -283,7 +284,7 @@ TextEditor::TextEditorWidget::Link EditorWidget1::findLinkAt(const QTextCursor& 
                 l.linkTextEnd = cur.position() - off + t.d_len;
                 return l;
             }
-        }else if( t.d_type == Tok_String && tokPos > 0 && toks[tokPos-1].d_type == Tok_CoDi &&
+        }else if( t.d_type == Tok_Str && tokPos > 0 && toks[tokPos-1].d_type == Tok_CoDi &&
                   matchDirective(toks[tokPos-1].d_val) == Cd_include )
         {
             const QString path = mdl->getIncs()->findPath( t.d_val, file );
