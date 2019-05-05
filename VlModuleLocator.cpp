@@ -25,7 +25,7 @@ using namespace Vl;
 
 ModuleLocator::ModuleLocator()
 {
-    setId("Modules");
+    setId("VerilogModules");
     setDisplayName(tr("Verilog modules and UDPs in global namespace"));
     setShortcutString(QString(QLatin1Char('m')));
     setIncludedByDefault(false);

@@ -20,7 +20,7 @@
 #include "VlProject.h"
 #include "VlProjectManager.h"
 #include "VlModelManager.h"
-#include "VlProjectFile.h"
+#include <Verilog/VlProjectConfig.h>
 #include "VlConstants.h"
 #include <Verilog/VlCrossRefModel.h>
 #include <Verilog/VlIncludes.h>
@@ -80,25 +80,6 @@ Project::Project(ProjectManager* projectManager, const QString& fileName):
     connect( &d_watcher, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)) );
 }
 
-QStringList Project::getConfig(const QString& key) const
-{
-    return d_config.value(key);
-}
-
-QStringList Project::getIncDirs() const
-{
-    return d_incDirs;
-}
-
-QString Project::getTopMod() const
-{
-    QStringList topmods = d_config.value("TOPMOD");
-    if( !topmods.isEmpty() )
-        return topmods.first();
-    else
-        return QString();
-}
-
 void Project::reload()
 {
     loadProject(d_document->filePath().toString());
@@ -126,34 +107,7 @@ ProjectExplorer::ProjectNode*Project::rootProjectNode() const
 
 QStringList Project::files(Project::FilesMode) const
 {
-    return d_srcFiles + d_libFiles;
-}
-
-void Project::populateDir(const QDir& dir, ProjectExplorer::FolderNode* parent )
-{
-    // Obsolet
-    QStringList files = dir.entryList( QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name );
-
-    foreach( const QString& f, files )
-    {
-        QDir newDir( dir.absoluteFilePath(f) );
-        ProjectExplorer::FolderNode* newFolder =
-                new ProjectExplorer::FolderNode(Utils::FileName::fromString(newDir.dirName() ) );
-        parent->addFolderNodes(QList<ProjectExplorer::FolderNode*>() << newFolder);
-        populateDir( newDir, newFolder );
-    }
-
-    files = dir.entryList( QStringList() << QString("*.v")
-                                           << QString("*.vl"),
-                                           QDir::Files, QDir::Name );
-    for( int i = 0; i < files.size(); i++ )
-    {
-        files[i] = dir.absoluteFilePath(files[i]);
-        parent->addFileNodes(QList<ProjectExplorer::FileNode*>() <<
-                             new ProjectExplorer::FileNode(Utils::FileName::fromString(files[i]),
-                                                                ProjectExplorer::SourceType, false));
-    }
-    d_srcFiles += files;
+    return d_config.getSrcFiles() + d_config.getLibFiles();
 }
 
 void Project::loadProject(const QString& fileName)
@@ -166,10 +120,6 @@ void Project::loadProject(const QString& fileName)
     mdl->getIncs()->clear();
     mdl->getSyms()->clear();
     mdl->getErrs()->clear();
-    d_srcFiles.clear();
-    d_libFiles.clear();
-    d_incDirs.clear();
-    d_config.clear();
 
     d_root->addFileNodes(QList<ProjectExplorer::FileNode*>() <<
                          new ProjectExplorer::FileNode(Utils::FileName::fromString(fileName),
@@ -181,200 +131,18 @@ void Project::loadProject(const QString& fileName)
     ProjectExplorer::FolderNode* sourceFolder = new ProjectExplorer::FolderNode(Utils::FileName::fromString("Sources"));
     d_root->addFolderNodes(QList<ProjectExplorer::FolderNode*>() << sourceFolder);
 
-    d_config["SRCEXT"] << ".v"; // Preset
-    d_config["LIBEXT"] << ".v";
-    d_config["SVEXT"] << ".sv";
 
-    ProjectFile p( d_config );
-    if( !p.read(fileName) )
+    if( !d_config.loadFromFile(fileName) )
         return; // TODO: Error Message
-
-    d_config = p.variables();
-    //qDebug() << d_config; // TEST
-
-    QStringList defs = d_config.value("DEFINES");
-    defs.sort();
-    for( int i = 0; i < defs.size(); i++ )
-    {
-        defs[i] = "`define " + defs[i];
-    }
-    if( !mdl->parseString(  defs.join('\n'), fileName ) )
-    {
-        return;
-    }
 
     const QString oldCur = QDir::currentPath();
     QDir::setCurrent(QFileInfo(fileName).path());
-
-    const QStringList incDirs = d_config.value("INCDIRS");
-    foreach( const QString& d, incDirs )
-    {
-        QFileInfo info(d);
-        QString path;
-        if( info.isRelative() )
-            path = QDir::cleanPath( QDir::current().absoluteFilePath(d) );
-        else
-            path = info.canonicalPath();
-        if( !d_incDirs.contains(path) )
-        {
-            mdl->getIncs()->addDir( QDir( path ) );
-            d_incDirs.append(path);
-        }
-    }
-
-    mdl->getFcache()->setSvSuffix(d_config["SVEXT"]);
-    mdl->getFcache()->setSupportSvExt(d_config["CONFIG"].contains("UseSvExtension") );
-
-    QStringList filter = d_config["LIBEXT"];
-    for( int i = 0; i < filter.size(); i++ )
-        filter[i] = "*" + filter[i];
-
-    QSet<QString> files;
-
-    QStringList libFiles = d_config.value("LIBFILES");
-    QStringList libDirs = d_config.value("LIBDIRS");
-
-    findFilesInDirs( libDirs, filter, files );
-    QDir lastDir = QDir::current();
-    foreach( const QString& f, libFiles )
-    {
-        QFileInfo info(f);
-        if( info.isDir() )
-        {
-            if( info.isRelative() )
-                lastDir = QDir::current().absoluteFilePath(f);
-            else
-                lastDir = info.absoluteDir();
-        }else
-        {
-            if( info.isRelative() )
-                files.insert( lastDir.absoluteFilePath(f) );
-            else
-                files.insert(f);
-        }
-    }
-    libFiles = files.toList();
-    libFiles.sort();
-
-    fillNode( libFiles, libsFolder );
-    d_libFiles = libFiles;
-
-    filter = d_config["SRCEXT"];
-    for( int i = 0; i < filter.size(); i++ )
-        filter[i] = "*" + filter[i];
-
-    files.clear();
-    QStringList srcFiles = d_config.value("SRCFILES");
-    QStringList srcDirs = d_config.value("SRCDIRS");
-    if( srcFiles.isEmpty() && ( srcDirs.isEmpty() || srcDirs.first().startsWith('-') ) )
-        srcDirs.prepend(".*");
-
-    findFilesInDirs( srcDirs, filter, files );
-    lastDir = QDir::current();
-    foreach( const QString& f, srcFiles )
-    {
-        QFileInfo info(f);
-        if( info.isDir() )
-        {
-            if( info.isRelative() )
-                lastDir = QDir::current().absoluteFilePath(f);
-            else
-                lastDir = info.absoluteDir();
-        }else
-        {
-            if( info.isRelative() )
-                files.insert( lastDir.absoluteFilePath(f) );
-            else
-                files.insert(f);
-        }
-    }
-    srcFiles = files.toList();
-    srcFiles.sort();
-
-    fillNode( srcFiles, sourceFolder );
-
-    d_srcFiles = srcFiles;
-
-    mdl->updateFiles( d_srcFiles + d_libFiles );
-    emit fileListChanged();
-
+    fillNode( d_config.getLibFiles(), libsFolder );
+    fillNode( d_config.getSrcFiles(), sourceFolder );
     QDir::setCurrent(oldCur);
-}
 
-static void filterFiles( QStringList& in, QSet<QString>& out, QSet<QString>& filter )
-{
-    if( filter.isEmpty() )
-    {
-        // Trivialfall
-        foreach( const QString& s, in )
-            out.insert(s);
-    }else
-    {
-        foreach( const QString& s, in )
-        {
-            if( !filter.contains( QFileInfo(s).fileName() ) )
-                out.insert(s);
-        }
-    }
-    in.clear();
-    filter.clear();
-}
-
-void Project::findFilesInDirs(const QStringList& dirs, const QStringList& filter, QSet<QString>& files)
-{
-    int i = 0;
-    QStringList files2;
-    QSet<QString> filter2;
-    while( i < dirs.size() )
-    {
-        QString dir = dirs[i];
-        if( dir.startsWith('-') )
-        {
-            // Element ist eine auszulassende Datei
-            filter2.insert( dir.mid(1).trimmed() );
-        }else
-        {
-            if( !files2.isEmpty() )
-                filterFiles( files2, files, filter2 );
-            // Element ist ein zu durchsuchendes Verzeichnis
-            bool recursive = false;
-            if( dir.endsWith( '*' ) )
-            {
-                recursive = true;
-                dir.chop(1);
-            }
-            findFilesInDir(dir,filter,files2,recursive);
-        }
-        i++;
-    }
-    if( !files2.isEmpty() )
-        filterFiles( files2, files, filter2 );
-}
-
-void Project::findFilesInDir(const QString& dirPath, const QStringList& filter, QStringList& out, bool recursive )
-{
-    QStringList files;
-
-    QDir dir(dirPath);
-
-    if( recursive )
-    {
-        files = dir.entryList( QDir::Dirs | QDir::NoDotAndDotDot );
-
-        foreach( const QString& f, files )
-        {
-            findFilesInDir( dir.absoluteFilePath(f), filter, out, recursive );
-        }
-    }
-
-    if( !filter.isEmpty() )
-        files = dir.entryList( filter, QDir::Files );
-    else
-        files.clear();
-    for( int i = 0; i < files.size(); i++ )
-    {
-        out.append( dir.absoluteFilePath(files[i]) );
-    }
+    d_config.setup( mdl );
+    emit fileListChanged();
 }
 
 void Project::fillNode(const QStringList& files, ProjectExplorer::FolderNode* root)
@@ -392,7 +160,8 @@ void Project::fillNode(const QStringList& files, ProjectExplorer::FolderNode* ro
                 cur = root;
             else
             {
-                cur = new ProjectExplorer::FolderNode(Utils::FileName::fromString( QDir::current().relativeFilePath(path) ) );
+                cur = new ProjectExplorer::FolderNode(Utils::FileName::fromString(
+                                                          QDir::current().relativeFilePath(path) ) );
                 root->addFolderNodes(QList<ProjectExplorer::FolderNode*>() << cur );
 
             }

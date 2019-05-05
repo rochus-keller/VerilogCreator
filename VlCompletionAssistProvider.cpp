@@ -118,12 +118,12 @@ namespace Vl
                 {
                     CrossRefModel::ScopeRef module;
                     const CrossRefModel::Branch* branch = CrossRefModel::closestBranch(p);
-                    if( branch && branch->tok().d_type == SynTree::R_module_or_udp_instantiation )
+                    if( branch && branch->tok().d_type == SynTree::R_module_or_udp_instantiation_ )
                     {
                         CrossRefModel::SymRef sym = mdl->findGlobal(branch->tok().d_val);
                         if( sym.constData() )
                             module = sym->toScope();
-                    }else if( branch && branch->tok().d_type == SynTree::R_module_or_udp_instance )
+                    }else if( branch && branch->tok().d_type == SynTree::R_module_or_udp_instance_ )
                     {
                         CrossRefModel::SymRef sym = mdl->findGlobal(branch->super()->tok().d_val);
                         if( sym.constData() )

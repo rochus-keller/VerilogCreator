@@ -23,6 +23,7 @@
 #include <projectexplorer/project.h>
 
 #include <QFileSystemWatcher>
+#include <Verilog/VlProjectConfig.h>
 
 namespace TextEditor { class TextDocument; }
 namespace ProjectExplorer { class FolderNode; }
@@ -40,11 +41,11 @@ namespace Vl
 
         explicit Project(ProjectManager *projectManager, const QString &fileName);
 
-        const QStringList& getSrcFiles() const { return d_srcFiles; }
-        const QStringList& getLibFiles() const { return d_libFiles; }
-        QStringList getConfig( const QString& key ) const;
-        QStringList getIncDirs() const;
-        QString getTopMod() const;
+        const QStringList& getSrcFiles() const { return d_config.getSrcFiles(); }
+        const QStringList& getLibFiles() const { return d_config.getLibFiles(); }
+        QStringList getConfig( const QString& key ) const { return d_config.getConfig(key); }
+        QStringList getIncDirs() const { return d_config.getIncDirs(); }
+        QString getTopMod() const { return d_config.getTopMod(); }
         void reload();
 
         // overrides
@@ -54,10 +55,7 @@ namespace Vl
         ProjectExplorer::ProjectNode *rootProjectNode() const Q_DECL_OVERRIDE;
         QStringList files(FilesMode) const Q_DECL_OVERRIDE;
     protected:
-        void populateDir( const QDir&, ProjectExplorer::FolderNode* );
         void loadProject( const QString& fileName );
-        static void findFilesInDirs( const QStringList& dirs, const QStringList& filter, QSet<QString>& files );
-        static void findFilesInDir(const QString& dir, const QStringList& filter, QStringList& files , bool recursive);
         static void fillNode( const QStringList& files, ProjectExplorer::FolderNode* );
 
 #if VL_QTC_VER >= 0306
@@ -72,8 +70,7 @@ namespace Vl
         TextEditor::TextDocument* d_document;
         ProjectNode* d_root;
         QString d_name;
-        QStringList d_srcFiles, d_libFiles, d_incDirs;
-        QMap<QString, QStringList> d_config;
+        ProjectConfig d_config;
         QFileSystemWatcher d_watcher;
     };
 }

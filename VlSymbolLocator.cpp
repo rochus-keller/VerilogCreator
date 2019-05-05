@@ -25,7 +25,7 @@ using namespace Vl;
 
 SymbolLocator::SymbolLocator()
 {
-    setId("Symbols");
+    setId("VerilogSymbols");
     setDisplayName(tr("Verilog symbols in current document"));
     setShortcutString(QString(QLatin1Char('.')));
     setIncludedByDefault(false);

@@ -28,7 +28,6 @@ namespace Core { class SearchResultItem; }
 namespace Vl
 {
     class EditorDocument1;
-    class CrossRefModel;
 
     class EditorWidget1 : public TextEditor::TextEditorWidget
     {

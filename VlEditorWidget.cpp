@@ -161,7 +161,7 @@ void EditorWidget1::onGotoOuterBlock()
     {
         if( !( path[i]->tok().d_lineNr == path[0]->tok().d_lineNr &&
                 path[i]->tok().d_colNr == path[0]->tok().d_colNr ) &&
-                path[i]->tok().d_type != SynTree::R_module_or_udp_instantiation &&
+                path[i]->tok().d_type != SynTree::R_module_or_udp_instantiation_ &&
                 path[i]->tok().d_sourcePath == path[i]->tok().d_sourcePath )
         {
             Core::EditorManager::cutForwardNavigationHistory();

@@ -90,7 +90,6 @@ SOURCES += \
     VlProject.cpp \
     VlProjectManager.cpp \
     VlHoverHandler.cpp \
-    VlProjectFile.cpp \
     VlConfigurationFactory.cpp \
     VlIcarusConfiguration.cpp \
     VlVerilatorConfiguration.cpp \
@@ -118,7 +117,6 @@ HEADERS += \
     VlProject.h \
     VlProjectManager.h \
     VlHoverHandler.h \
-    VlProjectFile.h \
     VlConfigurationFactory.h \
     VlIcarusConfiguration.h \
     VlVerilatorConfiguration.h \

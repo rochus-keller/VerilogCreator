@@ -139,7 +139,7 @@ QVariant OutlineMdl1::data(const QModelIndex& index, int role) const
         case SynTree::R_module_declaration:
         case SynTree::R_udp_declaration:
             return QPixmap(":/verilogcreator/images/block.png");
-        case SynTree::R_module_or_udp_instance:
+        case SynTree::R_module_or_udp_instance_:
             return QPixmap(":/verilogcreator/images/var.png");
         case SynTree::R_task_declaration:
         case SynTree::R_function_declaration:
@@ -206,12 +206,12 @@ void OutlineMdl1::fillSubs( const CrossRefModel::Branch* b, const QByteArray& na
         if( sym->tok().d_sourcePath == d_file &&
                 ( sym->tok().d_type == SynTree::R_task_declaration ||
                 sym->tok().d_type == SynTree::R_function_declaration ||
-                ( sym->tok().d_type == SynTree::R_module_or_udp_instance && !sym->tok().d_val.isEmpty() ) ) )
+                ( sym->tok().d_type == SynTree::R_module_or_udp_instance_ && !sym->tok().d_val.isEmpty() ) ) )
         {
             Slot s;
             s.d_sym = sym;
             s.d_name = name + "." + sym->tok().d_val;
-            if( sym->tok().d_type == SynTree::R_module_or_udp_instance )
+            if( sym->tok().d_type == SynTree::R_module_or_udp_instance_ )
                 s.d_name += " : " + sym->toBranch()->super()->tok().d_val;
             d_rows.append( s );
         }
@@ -219,7 +219,7 @@ void OutlineMdl1::fillSubs( const CrossRefModel::Branch* b, const QByteArray& na
         if( b2 )
         {
             QByteArray name2 = name;
-            if( b2->tok().d_type != SynTree::R_module_or_udp_instantiation && !b2->tok().d_val.isEmpty() )
+            if( b2->tok().d_type != SynTree::R_module_or_udp_instantiation_ && !b2->tok().d_val.isEmpty() )
                 name2 += "." + b2->tok().d_val;
             fillSubs( b2, name2 );
         }
@@ -272,7 +272,7 @@ QVariant OutlineMdl2::data(const QModelIndex& index, int role) const
     switch( role )
     {
     case Qt::DisplayRole:
-        if( s->d_sym->tok().d_type == SynTree::R_module_or_udp_instance )
+        if( s->d_sym->tok().d_type == SynTree::R_module_or_udp_instance_ )
             return s->d_sym->tok().d_val + " : " + s->d_sym->toBranch()->super()->tok().d_val;
         else
             return s->d_sym->tok().d_val; // + " " + QByteArray::number(s->d_sym->tok().d_lineNr);
@@ -284,7 +284,7 @@ QVariant OutlineMdl2::data(const QModelIndex& index, int role) const
         case SynTree::R_module_declaration:
         case SynTree::R_udp_declaration:
             return QPixmap(":/verilogcreator/images/block.png");
-        case SynTree::R_module_or_udp_instance:
+        case SynTree::R_module_or_udp_instance_:
             return QPixmap(":/verilogcreator/images/var.png");
         case SynTree::R_task_declaration:
         case SynTree::R_function_declaration:
@@ -402,7 +402,7 @@ void OutlineMdl2::fill(Slot* super, const CrossRefModel::Symbol* sym , QListIter
     case SynTree::R_udp_declaration:
     case SynTree::R_task_declaration:
     case SynTree::R_function_declaration:
-    case SynTree::R_module_or_udp_instance:
+    case SynTree::R_module_or_udp_instance_:
         if( !sym->tok().d_val.isEmpty() )
         {
             Slot* s = new Slot();
