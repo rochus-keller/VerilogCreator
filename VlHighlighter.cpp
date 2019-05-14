@@ -19,30 +19,15 @@
 
 #include "VlHighlighter.h"
 #include "VlModelManager.h"
+#include <Verilog/VlPpLexer.h>
 #include <texteditor/textdocumentlayout.h>
 #include <QBuffer>
 using namespace Vl;
 using namespace TextEditor;
 
-Highlighter1::Highlighter1(QTextDocument* parent) :
+VerilogHighlighter::VerilogHighlighter(QTextDocument* parent) :
     SyntaxHighlighter(parent)
 {
-    /*
-    static QVector<TextStyle> categories;
-    if (categories.isEmpty()) {
-        categories << C_NUMBER
-                   << C_STRING
-                   << C_KEYWORD
-                   << C_TYPE // C_PRIMITIVE_TYPE
-                   << C_FIELD
-                   << C_OPERATOR
-                   << C_PREPROCESSOR
-                   << C_COMMENT
-                   << C_LABEL
-                   ;
-    }
-    setTextFormatCategories(categories);
-    */
     for( int i = 0; i < C_Max; i++ )
     {
         d_format[i].setFontWeight(QFont::Normal);
@@ -70,12 +55,12 @@ Highlighter1::Highlighter1(QTextDocument* parent) :
     //d_format[C_Section].setFontOverline(true);
 }
 
-QTextCharFormat Highlighter1::formatForCategory(int c) const
+QTextCharFormat VerilogHighlighter::formatForCategory(int c) const
 {
     return d_format[c];
 }
 
-void Highlighter1::highlightBlock(const QString& text)
+void VerilogHighlighter::highlightBlock(const QString& text)
 {
     const int previousBlockState_ = previousBlockState();
     int lexerState = 0, initialBraceDepth = 0;
@@ -271,64 +256,3 @@ void Highlighter1::highlightBlock(const QString& text)
 
 
 
-static std::pair<int, TextEditor::TextStyle> make(int i,TextEditor::TextStyle s){
-    return std::pair<int, TextEditor::TextStyle>(i,s);}
-
-Highlighter2::Highlighter2(const Keywords& keywords):m_keywords(keywords)
-{
-    static QVector<TextStyle> categories;
-    categories << C_TYPE << C_KEYWORD << C_COMMENT << C_VISUAL_WHITESPACE;
-#if VL_QTC_VER >= 0405
-    setTextFormatCategories(categories.size(), [categories](int i){ return categories[i]; });
-#else
-    setTextFormatCategories(categories);
-#endif
-}
-
-void Highlighter2::highlightBlock(const QString& text)
-{
-    if (text.isEmpty())
-        return;
-
-    QString buf;
-    bool inCommentMode = false;
-
-    QTextCharFormat emptyFormat;
-    int i = 0;
-    for (;;) {
-        const QChar c = text.at(i);
-        if (inCommentMode) {
-            setFormat(i, 1, formatForCategory(ProfileCommentFormat));
-        } else {
-            if (c.isLetter() || c == QLatin1Char('_') || c == QLatin1Char('.') || c.isDigit()) {
-                buf += c;
-                setFormat(i - buf.length()+1, buf.length(), emptyFormat);
-                if (!buf.isEmpty() && m_keywords.isFunction(buf))
-                    setFormat(i - buf.length()+1, buf.length(), formatForCategory(ProfileFunctionFormat));
-                else if (!buf.isEmpty() && m_keywords.isVariable(buf))
-                    setFormat(i - buf.length()+1, buf.length(), formatForCategory(ProfileVariableFormat));
-            } else if (c == QLatin1Char('(')) {
-                if (!buf.isEmpty() && m_keywords.isFunction(buf))
-                    setFormat(i - buf.length(), buf.length(), formatForCategory(ProfileFunctionFormat));
-                buf.clear();
-            } else if (c == QLatin1Char('#')) {
-                inCommentMode = true;
-                setFormat(i, 1, formatForCategory(ProfileCommentFormat));
-                buf.clear();
-            } else {
-                if (!buf.isEmpty() && m_keywords.isVariable(buf))
-                    setFormat(i - buf.length(), buf.length(), formatForCategory(ProfileVariableFormat));
-                buf.clear();
-            }
-        }
-        i++;
-        if (i >= text.length())
-            break;
-    }
-
-#if VL_QTC_VER >= 0405
-    formatSpaces(text);
-#else
-    applyFormatToSpaces(text, formatForCategory(ProfileVisualWhitespaceFormat));
-#endif
-}

@@ -24,10 +24,10 @@
 
 namespace Vl
 {
-    class Indenter : public TextEditor::Indenter
+    class VerilogIndenter : public TextEditor::Indenter
     {
     public:
-        Indenter();
+        VerilogIndenter();
 
         // overrides
         bool isElectricCharacter(const QChar &ch) const;

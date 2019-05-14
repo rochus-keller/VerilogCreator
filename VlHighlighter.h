@@ -22,16 +22,14 @@
 
 #include <texteditor/textdocumentlayout.h>
 #include <texteditor/syntaxhighlighter.h>
-#include <texteditor/codeassist/keywordscompletionassist.h>
-#include <Verilog/VlPpLexer.h>
 
 namespace Vl
 {
-    class Highlighter1 : public TextEditor::SyntaxHighlighter
+    class VerilogHighlighter : public TextEditor::SyntaxHighlighter
     {
     public:
         enum { TokenProp = QTextFormat::UserProperty };
-        explicit Highlighter1(QTextDocument *parent = 0);
+        explicit VerilogHighlighter(QTextDocument *parent = 0);
 
     protected:
         QTextCharFormat formatForCategory(int) const;
@@ -44,23 +42,6 @@ namespace Vl
         QTextCharFormat d_format[C_Max];
     };
 
-    class Highlighter2 : public TextEditor::SyntaxHighlighter
-    {
-    public:
-        enum ProfileFormats {
-            ProfileVariableFormat,
-            ProfileFunctionFormat,
-            ProfileCommentFormat,
-            ProfileVisualWhitespaceFormat,
-            NumProfileFormats
-        };
-
-        explicit Highlighter2(const TextEditor::Keywords &keywords);
-        void highlightBlock(const QString &text);
-
-    private:
-        const TextEditor::Keywords m_keywords;
-    };
 }
 
 #endif // VLHIGHLIGHTER_H

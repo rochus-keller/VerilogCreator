@@ -18,14 +18,12 @@
 */
 
 #include "VlOutlineWidget.h"
-#include "VlEditorWidget.h"
-#include "VlEditor.h"
+#include "VlVerilogEditor.h"
 #include "VlOutlineMdl.h"
 #include <QLabel>
 #include <QMenu>
 #include <QVBoxLayout>
 #include <QtDebug>
-#include <texteditor/textdocument.h>
 #include <utils/fileutils.h>
 #include <coreplugin/editormanager/editormanager.h>
 using namespace Vl;

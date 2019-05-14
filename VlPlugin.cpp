@@ -19,10 +19,10 @@
 
 #include "VlPlugin.h"
 #include "VlProjectManager.h"
-#include "VlEditorFactory.h"
 #include "VlConstants.h"
+#include "VlVerilogEditor.h"
+#include "VlProjectEditor.h"
 #include "VlModelManager.h"
-#include "VlEditorWidget.h"
 #include "VlConfigurationFactory.h"
 #include "VlProject.h"
 #include "VlOutlineWidget.h"

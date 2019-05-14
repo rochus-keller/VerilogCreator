@@ -24,10 +24,10 @@
 
 namespace Vl
 {
-    class HoverHandler : public TextEditor::BaseHoverHandler
+    class VerilogHoverHandler : public TextEditor::BaseHoverHandler
     {
     public:
-        HoverHandler();
+        VerilogHoverHandler();
         void identifyMatch(TextEditor::TextEditorWidget *editorWidget, int pos);
     };
 }

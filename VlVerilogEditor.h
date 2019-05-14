@@ -1,5 +1,5 @@
-#ifndef VLEDITORDOCUMENT_H
-#define VLEDITORDOCUMENT_H
+#ifndef VLVERILOGEDITOR_H
+#define VLVERILOGEDITOR_H
 
 /*
 * Copyright 2018 Rochus Keller <mailto:me@rochus-keller.ch>
@@ -20,12 +20,30 @@
 * http://www.gnu.org/copyleft/gpl.html.
 */
 
+#include <texteditor/texteditor.h>
 #include <texteditor/textdocument.h>
-
+#include <utils/treeviewcombobox.h>
 #include <QTimer>
+
+namespace Core { class SearchResultItem; }
 
 namespace Vl
 {
+    class Editor1 : public TextEditor::BaseTextEditor
+    {
+        Q_OBJECT
+    public:
+        explicit Editor1();
+
+    };
+
+    class EditorFactory1 : public TextEditor::TextEditorFactory
+    {
+        Q_OBJECT
+    public:
+        EditorFactory1();
+    };
+
     class EditorDocument1 : public TextEditor::TextDocument
     {
         Q_OBJECT
@@ -34,11 +52,7 @@ namespace Vl
         ~EditorDocument1();
 
         // overrides
-#if VL_QTC_VER >= 0306
         TextDocument::OpenResult open(QString *errorString, const QString &fileName, const QString &realFileName);
-#else
-        bool open(QString *errorString, const QString &fileName, const QString &realFileName);
-#endif
         bool save(QString *errorString, const QString &fileName, bool autoSave);
 
     signals:
@@ -53,12 +67,41 @@ namespace Vl
         bool d_opening;
     };
 
-    class EditorDocument2 : public TextEditor::TextDocument
+    class EditorWidget1 : public TextEditor::TextEditorWidget
     {
         Q_OBJECT
     public:
-        EditorDocument2();
+        EditorWidget1();
+        ~EditorWidget1();
+
+        void finalizeInitialization(); // override
+
+    signals:
+        void sigGotoSymbol( quint32 line, quint16 col );
+
+    public slots:
+        void onFindUsages();
+        void onGotoOuterBlock();
+        void onFileUpdated( const QString& );
+        void onStartProcessing();
+
+    protected:
+        Link findLinkAt(const QTextCursor &, bool resolveTarget = true,
+                        bool inNextSplit = false) Q_DECL_OVERRIDE;
+        void contextMenuEvent(QContextMenuEvent *e) Q_DECL_OVERRIDE;
+
+    protected slots:
+        void onUpdateIfDefsOut();
+        void onUpdateCodeWarnings();
+        void onCursor();
+        void onOpenEditor(const Core::SearchResultItem &item);
+        void onDocReady();
+        void gotoSymbolInEditor();
+        void updateToolTip();
+    private:
+        Utils::TreeViewComboBox* d_outline;
     };
+
 }
 
-#endif // VLEDITORDOCUMENT_H
+#endif // VLVERILOGEDITOR_H

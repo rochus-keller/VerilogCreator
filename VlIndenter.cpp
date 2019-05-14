@@ -25,18 +25,18 @@ using namespace Vl;
 
 static const int TAB_SIZE = 4;
 
-Indenter::Indenter()
+VerilogIndenter::VerilogIndenter()
 {
 
 }
 
-bool Indenter::isElectricCharacter(const QChar& ch) const
+bool VerilogIndenter::isElectricCharacter(const QChar& ch) const
 {
     Q_UNUSED(ch);
     return false;
 }
 
-void Indenter::indentBlock(QTextDocument* doc, const QTextBlock& block, const QChar& typedChar,
+void VerilogIndenter::indentBlock(QTextDocument* doc, const QTextBlock& block, const QChar& typedChar,
                            const TextEditor::TabSettings& tabSettings)
 {
     // aus QtCreator texteditor normalindenter adaptiert

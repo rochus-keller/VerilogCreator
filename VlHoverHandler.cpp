@@ -18,22 +18,22 @@
 */
 
 #include "VlHoverHandler.h"
-#include <QTextCursor>
-#include <texteditor/texteditor.h>
-#include <projectexplorer/projecttree.h>
-#include <projectexplorer/project.h>
 #include "VlModelManager.h"
-#include "VlEditorDocument.h"
 #include <Verilog/VlCrossRefModel.h>
 #include <Verilog/VlPpSymbols.h>
 #include <Verilog/VlIncludes.h>
+#include <texteditor/texteditor.h>
+#include <texteditor/textdocument.h>
+#include <projectexplorer/projecttree.h>
+#include <projectexplorer/project.h>
 #include <utils/fileutils.h>
 #include <QTextBlock>
 #include <QTextStream>
+#include <QTextCursor>
 #include <QtDebug>
 using namespace Vl;
 
-HoverHandler::HoverHandler()
+VerilogHoverHandler::VerilogHoverHandler()
 {
 
 }
@@ -78,7 +78,7 @@ static QString prettyPrint( const PpSymbols::Define& d )
     return str;
 }
 
-void HoverHandler::identifyMatch(TextEditor::TextEditorWidget* editorWidget, int pos)
+void VerilogHoverHandler::identifyMatch(TextEditor::TextEditorWidget* editorWidget, int pos)
 {
     QString text = editorWidget->extraSelectionTooltip(pos);
 

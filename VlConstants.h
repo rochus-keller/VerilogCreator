@@ -22,28 +22,25 @@
 
 namespace Vl
 {
-    class Constants
+    namespace Constants
     {
-    public:
-        static const char* LangVerilog;
-        static const char* LangQmake;
-        static const char* EditorId1;
-        static const char* TaskId;
-        static const char* EditorDisplayName1;
-        static const char* EditorId2;
-        static const char* EditorDisplayName2;
-        static const char* MimeType;
-        static const char* ProjectMimeType;
-        static const char* SettingsId;
-        static const char* EditorContextMenuId1;
-        static const char* EditorContextMenuId2;
-        static const char* ToolsMenuId;
-        static const char* FindUsagesCmd;
-        static const char* GotoOuterBlockCmd;
-        static const char* ReloadProjectCmd;
-    private:
-        Constants();
-    };
+        const char LangVerilog[] = "Verilog";
+        const char LangQmake[] = "Qmake";
+        const char EditorId1[] = "Verilog.Editor";
+        const char TaskId[] = "Verilog.TaskId";
+        const char EditorDisplayName1[] = "Verilog Editor";
+        const char EditorId2[] = "Verilog.Project.Editor";
+        const char EditorDisplayName2[] = "Verilog Project Editor";
+        const char MimeType[] = "text/x-verilog";
+        const char ProjectMimeType[] = "text/x-verilogcreator-project";
+        const char SettingsId[] = "Verilog.Settings";
+        const char EditorContextMenuId1[] = "VerilogEditor.ContextMenu";
+        const char EditorContextMenuId2[] = "VerilogProjectEditor.ContextMenu";
+        const char ToolsMenuId[] = "VerilogTools.ToolsMenu";
+        const char FindUsagesCmd[] = "VerilogEditor.FindUsages";
+        const char GotoOuterBlockCmd[] = "VerilogEditor.GotoOuterBlockCmd";
+        const char ReloadProjectCmd[] = "VerilogEditor.ReloadProjectCmd";
+    }
 }
 
 #endif // VLCONSTANTS_H

@@ -17,35 +17,133 @@
 * http://www.gnu.org/copyleft/gpl.html.
 */
 
-#include "VlEditorWidget.h"
+#include "VlVerilogEditor.h"
 #include "VlConstants.h"
-#include "VlEditorDocument.h"
+#include "VlConstants.h"
+#include "VlHighlighter.h"
+#include "VlIndenter.h"
+#include "VlHoverHandler.h"
+#include "VlAutoCompleter.h"
+#include "VlCompletionAssistProvider.h"
 #include "VlModelManager.h"
 #include "VlOutlineMdl.h"
 #include <Verilog/VlCrossRefModel.h>
 #include <Verilog/VlPpSymbols.h>
 #include <Verilog/VlIncludes.h>
 #include <Verilog/VlErrors.h>
-#include <utils/fileutils.h>
 #include <Verilog/VlSynTree.h>
-#include <projectexplorer/projecttree.h>
-#include <projectexplorer/project.h>
-#include <projectexplorer/taskhub.h>
+#include <coreplugin/idocument.h>
+#include <utils/fileutils.h>
+#include <texteditor/texteditoractionhandler.h>
+#include <texteditor/texteditorsettings.h>
 #include <texteditor/textdocumentlayout.h>
 #include <texteditor/texteditorconstants.h>
 #include <texteditor/fontsettings.h>
+#include <projectexplorer/projecttree.h>
+#include <projectexplorer/project.h>
+#include <projectexplorer/taskhub.h>
 #include <coreplugin/find/searchresultwindow.h>
 #include <coreplugin/actionmanager/actionmanager.h>
 #include <coreplugin/actionmanager/command.h>
 #include <coreplugin/actionmanager/actioncontainer.h>
 #include <coreplugin/editormanager/editormanager.h>
-#include <QtDebug>
-#include <QTime>
+#include <QApplication>
 #include <QTextBlock>
 #include <QMenu>
+#include <QtDebug>
 using namespace Vl;
 
-// TODO const Core::IDocument *currentDocument = Core::EditorManager::currentDocument();
+static const int s_processIntervalMs = 150;
+
+Editor1::Editor1()
+{
+    addContext(Constants::LangVerilog);
+}
+
+EditorFactory1::EditorFactory1()
+{
+    setId(Constants::EditorId1);
+    setDisplayName(qApp->translate("OpenWith::Editors", Constants::EditorDisplayName1));
+    addMimeType(Constants::MimeType);
+    // addMimeType(Constants::ProjectMimeType);
+
+    setDocumentCreator([]() { return new EditorDocument1; });
+    setIndenterCreator([]() { return new VerilogIndenter; });
+    setEditorWidgetCreator([]() { return new EditorWidget1; });
+    setEditorCreator([]() { return new Editor1; });
+    setAutoCompleterCreator([]() { return new AutoCompleter; });
+    setCompletionAssistProvider(new CompletionAssistProvider);
+    setSyntaxHighlighterCreator([]() { return new VerilogHighlighter; });
+    setCommentStyle(Utils::CommentDefinition::CppStyle);
+    setParenthesesMatchingEnabled(true);
+    setCodeFoldingSupported(true);
+    setMarksVisible(true);
+    addHoverHandler(new VerilogHoverHandler);
+
+    setEditorActionHandlers(TextEditor::TextEditorActionHandler::Format
+                          | TextEditor::TextEditorActionHandler::UnCommentSelection
+                          | TextEditor::TextEditorActionHandler::UnCollapseAll
+                          | TextEditor::TextEditorActionHandler::FollowSymbolUnderCursor
+                            );
+}
+
+EditorDocument1::EditorDocument1():d_opening(false)
+{
+    setId(Constants::EditorId1);
+    // hier ist der Name noch nicht bekannt:
+    // qDebug() << "doc created" << filePath().toString() << displayName();
+
+    connect( this, SIGNAL(contentsChanged()), this, SLOT(onChangedContents()) );
+    d_processorTimer.setSingleShot(true);
+    d_processorTimer.setInterval(s_processIntervalMs);
+    connect(&d_processorTimer, SIGNAL(timeout()), this, SLOT(onProcess()));
+
+}
+
+EditorDocument1::~EditorDocument1()
+{
+    // hier ist der Name bekannt:
+    // qDebug() << "doc deleted" << filePath().toString() << displayName() ;
+    ModelManager::instance()->getFileCache()->removeFile( filePath().toString() );
+}
+
+TextEditor::TextDocument::OpenResult EditorDocument1::open(QString* errorString, const QString& fileName, const QString& realFileName)
+{
+    //qDebug() << "before open" << fileName << realFileName;
+    d_opening = true;
+    const TextDocument::OpenResult res = TextDocument::open(errorString, fileName, realFileName );
+    // wird nach EditorWidget::finalizeInitialization aufgerufen!
+    d_opening = false;
+    // qDebug() << "after open";
+    return res;
+}
+
+bool EditorDocument1::save(QString* errorString, const QString& fileName, bool autoSave)
+{
+    const bool res = TextDocument::save(errorString,fileName, autoSave);
+    if( !autoSave )
+        ModelManager::instance()->getFileCache()->removeFile( filePath().toString() );
+    return res;
+}
+
+void EditorDocument1::onChangedContents()
+{
+    if( d_opening )
+        emit sigLoaded();
+    else
+        d_processorTimer.start(s_processIntervalMs);
+}
+
+void EditorDocument1::onProcess()
+{
+    emit sigStartProcessing();
+    const QString file = filePath().toString();
+    ModelManager::instance()->getFileCache()->addFile( file, plainText().toLatin1() );
+    CrossRefModel* mdl = ModelManager::instance()->getModelForCurrentProject();
+    if( mdl == 0 )
+        mdl = ModelManager::instance()->getModelForDir(file);
+    mdl->updateFiles( QStringList() << file );
+}
 
 typedef QList<QTextEdit::ExtraSelection> ExtraSelections;
 
@@ -472,12 +570,7 @@ void EditorWidget1::onCursor()
 
 void EditorWidget1::onOpenEditor(const Core::SearchResultItem& item)
 {
-#if VL_QTC_VER >= 0405
-    Core::EditorManager::openEditorAtSearchResult( item );
-#else
     Core::EditorManager::openEditorAt( item.path.first(), item.lineNumber, item.textMarkPos);
-#endif
-
 }
 
 void EditorWidget1::onDocReady()
@@ -518,28 +611,4 @@ void EditorWidget1::gotoSymbolInEditor()
 void EditorWidget1::updateToolTip()
 {
     d_outline->setToolTip(d_outline->currentText());
-}
-
-EditorWidget2::EditorWidget2()
-{
-
-}
-
-void EditorWidget2::contextMenuEvent(QContextMenuEvent* e)
-{
-    QPointer<QMenu> menu(new QMenu(this));
-
-    Core::ActionContainer *mcontext = Core::ActionManager::actionContainer(Vl::Constants::EditorContextMenuId2);
-    QMenu *contextMenu = mcontext->menu();
-
-    foreach (QAction *action, contextMenu->actions()) {
-        menu->addAction(action);
-    }
-
-    appendStandardContextMenuActions(menu);
-
-    menu->exec(e->globalPos());
-    if (!menu)
-        return;
-    delete menu;
 }
