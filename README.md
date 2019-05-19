@@ -123,6 +123,7 @@ Follow these steps if you want to build VerilogCreator yourself:
 1. Create a build directory; let's call it BUILD_DIR
 1. Download the VerilogCreator source code from https://github.com/rochus-keller/VerilogCreator/archive/master.zip and unpack it to the BUILD_DIR; rename the subdirectory to "VerilogCreator".
 1. Download the Verilog parser source code from https://github.com/rochus-keller/Verilog/archive/master.zip and unpack it to the BUILD_DIR; rename "Verilog-Master" to "Verilog". 
+1. Download the Sdf parser source code from https://github.com/rochus-keller/Sdf/archive/master.zip and unpack it to the BUILD_DIR; rename "Sdf-Master" to "Sdf". 
 1. Download the appropriate version of the QtCreator source code from https://download.qt.io/official_releases/qtcreator/ and unpack it to the BUILD_DIR. Instead of the QtCreator source code you can also use the QtcCreator source code (see https://github.com/rochus-keller/QtcVerilog).
 1. In case you don't have the Tcl development package installed: download http://software.rochus-keller.info/tcl_headers.zip and unpack it to BUILD_DIR/tcl.
 1. Either set the QTC_SOURCE (path to the QtCreator/QtcVerilog source code directory) and QTC_BUILD (path to the QtCreator/QtcVerilog installation directory) environment variables or directly modify the QTCREATOR_SOURCES and IDE_BUILD_TREE variables in VerilogCreator.pro. 
