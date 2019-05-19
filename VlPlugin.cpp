@@ -22,6 +22,7 @@
 #include "VlConstants.h"
 #include "VlVerilogEditor.h"
 #include "VlProjectEditor.h"
+#include "VlSdfEditor.h"
 #include "VlModelManager.h"
 #include "VlConfigurationFactory.h"
 #include "VlProject.h"
@@ -87,6 +88,7 @@ bool VerilogCreatorPlugin::initialize(const QStringList &arguments, QString *err
 
     addAutoReleasedObject(new Vl::EditorFactory1);
     addAutoReleasedObject(new Vl::EditorFactory2);
+    addAutoReleasedObject(new Vl::EditorFactory3);
     addAutoReleasedObject(new Vl::OutlineWidgetFactory);
     addAutoReleasedObject(new Vl::ModuleLocator);
     addAutoReleasedObject(new Vl::SymbolLocator);
@@ -194,8 +196,10 @@ void VerilogCreatorPlugin::initializeToolsSettings()
 
     Utils::MimeDatabase db;
     //qDebug() << db.mimeTypesForFileName("test.v");
+    // qDebug() << "global patterns" << db.allGlobPatterns();
     TextEditor::TextEditorSettings::registerMimeTypeForLanguageId(Vl::Constants::MimeType, Vl::Constants::LangVerilog);
     TextEditor::TextEditorSettings::registerMimeTypeForLanguageId(Vl::Constants::ProjectMimeType, Vl::Constants::LangQmake);
+    TextEditor::TextEditorSettings::registerMimeTypeForLanguageId(Vl::Constants::SdfMimeType, Vl::Constants::LangSdf);
 
 }
 

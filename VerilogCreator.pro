@@ -79,11 +79,6 @@ INCLUDEPATH += ..
 
 SOURCES += \
     VlHighlighter.cpp \
-    VlConstants.cpp \
-    VlEditor.cpp \
-    VlEditorDocument.cpp \
-    VlEditorFactory.cpp \
-    VlEditorWidget.cpp \
     VlPlugin.cpp \
     VlIndenter.cpp \
     VlModelManager.cpp \
@@ -101,16 +96,15 @@ SOURCES += \
     VlCompletionAssistProvider.cpp \
     VlOutlineWidget.cpp \
     VlModuleLocator.cpp \
-    VlSymbolLocator.cpp
+    VlSymbolLocator.cpp \
+    VlVerilogEditor.cpp \
+    VlProjectEditor.cpp \
+    VlSdfEditor.cpp
 
 HEADERS += \
     verilogcreator_global.h \
     VlHighlighter.h \
     VlConstants.h \
-    VlEditor.h \
-    VlEditorDocument.h \
-    VlEditorFactory.h \
-    VlEditorWidget.h \
     VlPlugin.h \
     VlIndenter.h \
     VlModelManager.h \
@@ -128,9 +122,13 @@ HEADERS += \
     VlCompletionAssistProvider.h \
     VlOutlineWidget.h \
     VlModuleLocator.h \
-    VlSymbolLocator.h
+    VlSymbolLocator.h \
+    VlVerilogEditor.h \
+    VlProjectEditor.h \
+    VlSdfEditor.h
 
 include (../Verilog/Verilog.pri )
+include (../Sdf/Sdf.pri )
 
 OTHER_FILES +=
 

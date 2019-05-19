@@ -26,6 +26,7 @@ namespace Vl
     {
         const char LangVerilog[] = "Verilog";
         const char LangQmake[] = "Qmake";
+        const char LangSdf[] = "Sdf";
         const char EditorId1[] = "Verilog.Editor";
         const char TaskId[] = "Verilog.TaskId";
         const char EditorDisplayName1[] = "Verilog Editor";
@@ -33,6 +34,9 @@ namespace Vl
         const char EditorDisplayName2[] = "Verilog Project Editor";
         const char MimeType[] = "text/x-verilog";
         const char ProjectMimeType[] = "text/x-verilogcreator-project";
+        const char EditorId3[] = "Verilog.Sdf.Editor";
+        const char EditorDisplayName3[] = "Sdf Editor";
+        const char SdfMimeType[] = "text/x-verilogcreator-sdf";
         const char SettingsId[] = "Verilog.Settings";
         const char EditorContextMenuId1[] = "VerilogEditor.ContextMenu";
         const char EditorContextMenuId2[] = "VerilogProjectEditor.ContextMenu";

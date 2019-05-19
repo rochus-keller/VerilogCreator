@@ -33,6 +33,7 @@
 #include <projectexplorer/kitmanager.h>
 #include <projectexplorer/runconfiguration.h>
 #include <coreplugin/icontext.h>
+#include <utils/mimetypes/mimedatabase.h>
 
 namespace Vl
 {
@@ -131,7 +132,6 @@ void Project::loadProject(const QString& fileName)
     ProjectExplorer::FolderNode* sourceFolder = new ProjectExplorer::FolderNode(Utils::FileName::fromString("Sources"));
     d_root->addFolderNodes(QList<ProjectExplorer::FolderNode*>() << sourceFolder);
 
-
     if( !d_config.loadFromFile(fileName) )
         return; // TODO: Error Message
 
@@ -139,9 +139,29 @@ void Project::loadProject(const QString& fileName)
     QDir::setCurrent(QFileInfo(fileName).path());
     fillNode( d_config.getLibFiles(), libsFolder );
     fillNode( d_config.getSrcFiles(), sourceFolder );
+    if( !d_config.getOtherFiles().isEmpty() )
+    {
+        ProjectExplorer::FolderNode* othersFolder =
+                new ProjectExplorer::FolderNode(Utils::FileName::fromString("Other Files"));
+        d_root->addFolderNodes(QList<ProjectExplorer::FolderNode*>() << othersFolder);
+        fillNode( d_config.getOtherFiles(), othersFolder );
+    }
     QDir::setCurrent(oldCur);
 
     d_config.setup( mdl );
+
+    Utils::MimeDatabase db;
+    Utils::MimeType mt = db.mimeTypeForName(Constants::MimeType);
+    // qDebug() << "MimeType pre" << mt.name() << mt.suffixes() << mt.globPatterns();
+    QStringList pat = d_config.getConfig("SRCEXT");
+    pat += d_config.getConfig("LIBEXT");
+    pat += d_config.getConfig("SVEXT");
+    for( int i = 0; i < pat.size(); i++ )
+        pat[i] = QLatin1String("*") + pat[i];
+    pat += mt.globPatterns();
+    Utils::MimeDatabase::setGlobPatternsForMimeType( mt, pat.toSet().toList() );
+    // qDebug() << "MimeType post" << mt.name() << mt.suffixes() << mt.globPatterns();
+
     emit fileListChanged();
 }
 
@@ -173,21 +193,12 @@ void Project::fillNode(const QStringList& files, ProjectExplorer::FolderNode* ro
     }
 }
 
-#if VL_QTC_VER >= 0306
 ProjectExplorer::Project::RestoreResult Project::fromMap(const QVariantMap &map, QString *errorMessage)
-#else
-bool Project::fromMap(const QVariantMap& map)
-#endif
 {
     // Diese Funktion wird von Explorer-Plugin immer aufgerufen, auch wenn .user noch nicht existiert
 
-#if VL_QTC_VER >= 0306
     if (ProjectExplorer::Project::fromMap(map,errorMessage) != Project::RestoreResult::Ok )
         return Project::RestoreResult::Error;
-#else
-    if (!ProjectExplorer::Project::fromMap(map))
-        return false;
-#endif
 
     // aus GenericProject
     ProjectExplorer::Kit *defaultKit = ProjectExplorer::KitManager::defaultKit();
@@ -223,11 +234,7 @@ bool Project::fromMap(const QVariantMap& map)
     }
 
     // refresh(Everything);
-#if VL_QTC_VER >= 0306
     return Project::RestoreResult::Ok;
-#else
-    return true;
-#endif
 }
 
 void Project::onFileChanged(const QString& path)

@@ -1,7 +1,7 @@
 {
     \"Name\" : \"VerilogCreator\",
-    \"Version\" : \"0.7.2\",
-    \"CompatVersion\" : \"0.7.2\",
+    \"Version\" : \"0.8.0\",
+    \"CompatVersion\" : \"0.8.0\",
     \"Vendor\" : \"Rochus Keller\",
     \"Copyright\" : \"(C) 2019 Rochus Keller\",
     \"License\" : \"GPL\",

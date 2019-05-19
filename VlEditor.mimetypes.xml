@@ -12,4 +12,9 @@
     <glob pattern='*.vh'/>
     <glob pattern='*.vl'/>
   </mime-type>
+  <mime-type type='text/x-verilogcreator-sdf'>
+    <sub-class-of type='text/plain'/>
+    <comment>Sdf file</comment>
+    <glob pattern='*.sdf'/>
+  </mime-type>
 </mime-info>

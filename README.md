@@ -28,7 +28,8 @@ The plugin is still work in progress, but it already has enough functionality to
 - Icarus Verilog build and run configuration; directly run compiler and simulator from within QtCreator
 - Verilator and Yosys build configurations; generate command files, optional arguments
 - Build configuration based on custom Tcl scripts which can access project configuration (e.g. to run Vivado commands)
-- Selected optional SystemVerilog syntax extensions such as assert, assume, cover and restrict (see [here for more information](###supported-systemverilog-subset))
+- Selected optional SystemVerilog syntax extensions such as assert, assume, cover and restrict (see [here for more information](#supported-systemverilog-subset))
+- Supports Standard Delay Format (SDF) files with syntax highlighting, see [screenshot](http://software.rochus-keller.info/vlcreator_sdf_editor_screenshot.png)
 
 ### Project file format
 
@@ -91,6 +92,10 @@ This variable is used to tell the parser which files should be considered System
 `CONFIG += UseSvExtension`
 
 Use this option to enable the SystemVerilog extension for the whole project. Without this option, all files are assumed to be in Verilog 05 format besides the files whose suffix corresponds to one in SVEXT. With the option enabled all files are assumed to be in the supported SystemVerilog 2012 subset.
+
+`OTHER_FILES += `
+
+The variable `OTHER_FILES` lets you add other than source or library files (e.g. SDF files) to your project. The syntax and semantics are the same as with `SRCFILES`. 
 
 ### Supported SystemVerilog subset
 

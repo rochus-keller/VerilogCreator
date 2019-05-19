@@ -49,7 +49,7 @@ EditorFactory2::EditorFactory2()
     //setCompletionAssistProvider(new CompletionAssistProvider);
 
     QStringList vars;
-    vars << "INCDIRS" << "DEFINES" << "LIBDIRS" << "LIBFILES" << "LIBEXT"
+    vars << "INCDIRS" << "DEFINES" << "LIBDIRS" << "LIBFILES" << "LIBEXT" << "OTHER_FILES"
                << "SRCDIRS" << "SRCFILES" << "SRCEXT" << "CONFIG" << "TOPMOD"
                << "BUILD_UNDEFS" << "VLTR_UNDEFS" << "VLTR_ARGS" << "YOSYS_UNDEFS" << "YOSYS_CMDS";
     vars.sort();

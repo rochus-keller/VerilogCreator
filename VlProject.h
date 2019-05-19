@@ -58,11 +58,7 @@ namespace Vl
         void loadProject( const QString& fileName );
         static void fillNode( const QStringList& files, ProjectExplorer::FolderNode* );
 
-#if VL_QTC_VER >= 0306
         RestoreResult fromMap(const QVariantMap &map, QString *errorMessage) Q_DECL_OVERRIDE;
-#else
-        bool fromMap(const QVariantMap &map) Q_DECL_OVERRIDE;
-#endif
     protected slots:
         void onFileChanged(const QString& path);
     private:
