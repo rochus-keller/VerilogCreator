@@ -1,35 +1,35 @@
-![icon](http://software.rochus-keller.info/VerilogCreator_100.png)
+![icon](http://software.rochus-keller.ch/VerilogCreator_100.png)
 ## Welcome to VerilogCreator 
 
 VerilogCreator is a [QtCreator](https://download.qt.io/official_releases/qtcreator/) plugin. It turns QtCreator into a Verilog 2005 IDE. 
 
 The plugin is still work in progress, but it already has enough functionality to analyze existing code bases or to develop new code. The current version supports Verilog 2005 syntax checking/coloring and semantic code navigation/highlighting; there are build configurations for Icarus, Verilator, Yosys and Tcl. Projects can be configured using a file format similar to qmake.
 
-![screenshot](http://software.rochus-keller.info/VlCreator_screenshot2.png "VerilogCreator Screenshot")
+![screenshot](http://software.rochus-keller.ch/VlCreator_screenshot2.png "VerilogCreator Screenshot")
 
 
-![screenshot](http://software.rochus-keller.info/VlCreator_screenshot7.png "VerilogCreator Screenshot")
+![screenshot](http://software.rochus-keller.ch/VlCreator_screenshot7.png "VerilogCreator Screenshot")
 
 ### Implemented Features
 
 - Syntax highlighting (including ifdefed out blocks and markers)
-- Context sensitive code completer, see [screenshot](http://software.rochus-keller.info/vlcreator_completer_screenshot.png)
+- Context sensitive code completer, see [screenshot](http://software.rochus-keller.ch/vlcreator_completer_screenshot.png)
 - Inline code warnings and errors 
 - Parentheses and begin/end block matching/navigation
 - Hover tooltips
 - Follow symbol under cursor, follow includes (multi-file support)
 - Show where a symbol is used 
 - Drop-down menu to jump to modules, module instances, functions and tasks in current file  
-- Outline view; see [screenshot](http://software.rochus-keller.info/vlcreator_outline_screenshot.png)
-- Module locator (global) and symbol locator (current document); see [screenshot 1](http://software.rochus-keller.info/vlcreator_module_locator_screenshot.png) and [screenshot 2](http://software.rochus-keller.info/vlcreator_symbol_locator_screenshot.png)
+- Outline view; see [screenshot](http://software.rochus-keller.ch/vlcreator_outline_screenshot.png)
+- Module locator (global) and symbol locator (current document); see [screenshot 1](http://software.rochus-keller.ch/vlcreator_module_locator_screenshot.png) and [screenshot 2](http://software.rochus-keller.ch/vlcreator_symbol_locator_screenshot.png)
 - Syntax based code folding and some other features supported by QtCreator, see http://doc.qt.io/qtcreator/
-- Marker based code folding (MBCF); use section markers like //{ and //}, or //> and //<; see [screenshot 1](http://software.rochus-keller.info/vlcreator_mbcf_screenshot1.png) and [screenshot 2](http://software.rochus-keller.info/vlcreator_mbcf_screenshot2.png)
+- Marker based code folding (MBCF); use section markers like //{ and //}, or //> and //<; see [screenshot 1](http://software.rochus-keller.ch/vlcreator_mbcf_screenshot1.png) and [screenshot 2](http://software.rochus-keller.ch/vlcreator_mbcf_screenshot2.png)
 - Project file to configure source files, include dirs, defines and libraries
 - Icarus Verilog build and run configuration; directly run compiler and simulator from within QtCreator
 - Verilator and Yosys build configurations; generate command files, optional arguments
 - Build configuration based on custom Tcl scripts which can access project configuration (e.g. to run Vivado commands)
 - Selected optional SystemVerilog syntax extensions such as assert, assume, cover and restrict (see [here for more information](#supported-systemverilog-subset))
-- Supports Standard Delay Format (SDF) files with syntax highlighting, see [screenshot](http://software.rochus-keller.info/vlcreator_sdf_editor_screenshot.png)
+- Supports Standard Delay Format (SDF) files with syntax highlighting, see [screenshot](http://software.rochus-keller.ch/vlcreator_sdf_editor_screenshot.png)
 
 ### Project file format
 
@@ -125,7 +125,7 @@ Follow these steps if you want to build VerilogCreator yourself:
 1. Download the Verilog parser source code from https://github.com/rochus-keller/Verilog/archive/master.zip and unpack it to the BUILD_DIR; rename "Verilog-Master" to "Verilog". 
 1. Download the Sdf parser source code from https://github.com/rochus-keller/Sdf/archive/master.zip and unpack it to the BUILD_DIR; rename "Sdf-Master" to "Sdf". 
 1. Download the appropriate version of the QtCreator source code from https://download.qt.io/official_releases/qtcreator/ and unpack it to the BUILD_DIR. Instead of the QtCreator source code you can also use the QtcCreator source code (see https://github.com/rochus-keller/QtcVerilog).
-1. In case you don't have the Tcl development package installed: download http://software.rochus-keller.info/tcl_headers.zip and unpack it to BUILD_DIR/tcl.
+1. In case you don't have the Tcl development package installed: download http://software.rochus-keller.ch/tcl_headers.zip and unpack it to BUILD_DIR/tcl.
 1. Either set the QTC_SOURCE (path to the QtCreator/QtcVerilog source code directory) and QTC_BUILD (path to the QtCreator/QtcVerilog installation directory) environment variables or directly modify the QTCREATOR_SOURCES and IDE_BUILD_TREE variables in VerilogCreator.pro. 
 1. Goto the BUILD_DIR/VerilogCreator subdirectory and execute `QTDIR/bin/qmake VerilogCreator.pro` (see the Qt documentation concerning QTDIR).
 1. Run make; after a couple of minutes the plugin is compiled and automatically deployed to the local QtCreator plugin directory (on Linux to ~/.local/share/data/QtProject/qtcreator/plugins/x.y.z/libVerilogCreator.so) or directly to QtcVerilog. 
